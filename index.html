@@ -78,27 +78,28 @@
   .workspace{flex:1;min-width:0;padding:32px 36px 80px;}
   .workspace-inner{max-width:900px;margin:0 auto;}
 
-  /* ---------- Secondary sidebar: live categorisation summary (fixed, not scrollable) ---------- */
-  .sidebar-right{
-    background:var(--white);color:var(--ink);
-    border-left:1px solid var(--line);
-    padding:26px 22px;justify-content:flex-start;
+  /* ---------- Sidebar: Categorisation Summary (merged field guide + live values) ---------- */
+  .sidebar-block-summary{
+    background:rgba(0,156,221,.08);border:1px solid rgba(0,156,221,.35);
+    border-radius:var(--radius-md);margin:14px 20px;padding:14px 16px 4px;
   }
+  .sidebar-block-summary label{color:var(--concrete);}
   .summary-panel[hidden]{display:none;}
-  .summary-title{font-size:15.5px;font-weight:700;color:var(--navy);margin-bottom:20px;}
-  .summary-row{margin-bottom:18px;}
-  .summary-row:last-child{margin-bottom:0;}
-  .summary-label{
+  .summary-field{margin-bottom:16px;}
+  .summary-field:last-child{margin-bottom:0;}
+  .summary-field-label{
     font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
-    color:var(--ink-soft);margin-bottom:6px;
+    color:rgba(255,255,255,.5);margin-bottom:4px;
   }
-  .summary-value{font-size:14px;font-weight:600;color:var(--navy);}
-  .summary-empty{font-size:13px;color:var(--ink-soft);font-style:italic;font-weight:400;}
-  .summary-values{display:flex;flex-wrap:wrap;gap:6px;}
-  .sum-tag{font-size:12px;font-weight:600;border-radius:100px;padding:5px 12px;}
+  .summary-field-value{font-size:14px;font-weight:700;color:#fff;}
+  .summary-field-value .summary-empty,
+  .summary-field-tags .summary-empty{font-size:12.5px;color:rgba(255,255,255,.4);font-style:italic;font-weight:400;}
+  .summary-field-tags{display:flex;flex-wrap:wrap;gap:6px;}
+  .sum-tag{font-size:11.5px;font-weight:600;border-radius:100px;padding:4px 11px;}
   .sum-tag.ind{background:var(--blue);color:var(--white);}
-  .sum-tag.cat{background:var(--navy);color:var(--white);}
-  .sum-tag.sub{background:var(--steel);color:var(--navy);border:1px solid var(--line);}
+  .sum-tag.cat{background:var(--concrete);color:var(--navy);}
+  .sum-tag.sub{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.25);}
+  .summary-field-note{font-size:11.5px;color:rgba(255,255,255,.45);line-height:1.4;margin-top:4px;}
 
   /* ---------- Intro ---------- */
   .intro{padding-bottom:32px;}
@@ -110,7 +111,6 @@
   @media(max-width:860px){
     .shell{flex-direction:column;}
     .sidebar{width:100%;height:auto;position:relative;}
-    .sidebar-right{border-left:none;border-top:1px solid var(--line);order:3;}
     .workspace{padding:24px 16px 60px;}
   }
 
@@ -380,12 +380,6 @@
   }
   .ai-restart:hover{text-decoration:underline;}
 
-  /* ---------- Sidebar field guide ---------- */
-  .sidebar-guide-item{margin-bottom:13px;}
-  .sidebar-guide-item:last-child{margin-bottom:0;}
-  .sidebar-guide-item .sg-label{font-size:12.5px;font-weight:700;color:#fff;margin-bottom:2px;}
-  .sidebar-guide-item .sg-text{font-size:12px;color:rgba(255,255,255,.55);line-height:1.45;}
-
   footer{border-top:1px solid var(--line);padding:22px 0;margin-top:20px;}
   footer .wrap{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);flex-wrap:wrap;gap:8px;}
 
@@ -412,9 +406,12 @@
         <div id="entityNav"></div>
       </div>
 
-      <div class="sidebar-block">
-        <label>Field guide</label>
-        <div id="sidebarGuide"></div>
+      <div class="sidebar-block sidebar-block-summary">
+        <label>Categorisation Summary</label>
+        <div class="summary-panel" id="summary-contacts" data-entity="contacts"></div>
+        <div class="summary-panel" id="summary-candidates" data-entity="candidates" hidden></div>
+        <div class="summary-panel" id="summary-jobs" data-entity="jobs" hidden></div>
+        <div class="summary-panel" id="summary-companies" data-entity="companies" hidden></div>
       </div>
     </div>
   </aside>
@@ -441,13 +438,6 @@
 
     </div>
   </main>
-
-  <aside class="sidebar sidebar-right">
-    <div class="summary-panel" id="summary-contacts" data-entity="contacts"></div>
-    <div class="summary-panel" id="summary-candidates" data-entity="candidates" hidden></div>
-    <div class="summary-panel" id="summary-jobs" data-entity="jobs" hidden></div>
-    <div class="summary-panel" id="summary-companies" data-entity="companies" hidden></div>
-  </aside>
 </div>
 
 <script>
@@ -858,18 +848,6 @@ function switchEntityTab(entityId) {
   document.querySelectorAll('#entityNav .sidebar-nav-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.entityTab === entityId);
   });
-  renderSidebarGuide(entityId);
-}
-
-function renderSidebarGuide(entityId) {
-  const cfg = ENTITY_CONFIG[entityId];
-  const guide = document.getElementById('sidebarGuide');
-  guide.innerHTML = cfg.tips.map(t => `
-    <div class="sidebar-guide-item">
-      <div class="sg-label">${t.label}</div>
-      <div class="sg-text">${t.text}</div>
-    </div>
-  `).join('');
 }
 
 /* ===================== PER-ENTITY PANEL: BUILD + WIRE ===================== */
@@ -1008,24 +986,27 @@ function initEntity(entityId) {
 
   const summaryRoot = document.getElementById('summary-' + entityId);
   summaryRoot.innerHTML = `
-    <div class="summary-title">${cfg.resultsTitle}</div>
-    ${cfg.identityFields.map(f => `
-      <div class="summary-row">
-        <div class="summary-label">${f.resultLabel}</div>
-        <div class="summary-value" data-role="sum-res-${f.key}"><span class="summary-empty">Not entered yet</span></div>
+    ${cfg.identityFields.map((f, i) => `
+      <div class="summary-field">
+        <div class="summary-field-label">${f.resultLabel}</div>
+        <div class="summary-field-value" data-role="sum-res-${f.key}"><span class="summary-empty">Not entered yet</span></div>
+        ${i === 0 && cfg.tips[0] ? `<div class="summary-field-note">${cfg.tips[0].text}</div>` : ''}
       </div>
     `).join('')}
-    <div class="summary-row">
-      <div class="summary-label">Industry</div>
-      <div class="summary-values" data-role="sumResIndustry"><span class="summary-empty">Not selected yet</span></div>
+    <div class="summary-field">
+      <div class="summary-field-label">Industry</div>
+      <div class="summary-field-tags" data-role="sumResIndustry"><span class="summary-empty">Not selected yet</span></div>
+      <div class="summary-field-note">${cfg.tips[1].text}</div>
     </div>
-    <div class="summary-row">
-      <div class="summary-label">Category</div>
-      <div class="summary-values" data-role="sumResCategory"><span class="summary-empty">Not selected yet</span></div>
+    <div class="summary-field">
+      <div class="summary-field-label">Category</div>
+      <div class="summary-field-tags" data-role="sumResCategory"><span class="summary-empty">Not selected yet</span></div>
+      <div class="summary-field-note">${cfg.tips[2].text}</div>
     </div>
-    <div class="summary-row">
-      <div class="summary-label">Subcategory</div>
-      <div class="summary-values" data-role="sumResSubcategory"><span class="summary-empty">Not selected yet</span></div>
+    <div class="summary-field">
+      <div class="summary-field-label">Subcategory</div>
+      <div class="summary-field-tags" data-role="sumResSubcategory"><span class="summary-empty">Not selected yet</span></div>
+      <div class="summary-field-note">${cfg.tips[3].text}</div>
     </div>
   `;
 
@@ -1389,7 +1370,6 @@ function initEntity(entityId) {
 /* ===================== BOOT ===================== */
 
 renderEntityNav();
-renderSidebarGuide(ENTITY_ORDER[0]);
 ENTITY_ORDER.forEach(id => initEntity(id));
 </script>
 
