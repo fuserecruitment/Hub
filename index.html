@@ -87,11 +87,20 @@
   .summary-panel[hidden]{display:none;}
   .summary-field{margin-bottom:16px;}
   .summary-field:last-child{margin-bottom:0;}
+  .summary-field-label-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
   .summary-field-label{
-    font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
-    color:rgba(255,255,255,.5);margin-bottom:4px;
+    font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+    color:#fff;
   }
-  .summary-field-value{font-size:14px;font-weight:700;color:#fff;}
+  .summary-field-help{
+    flex-shrink:0;width:15px;height:15px;padding:0;border-radius:50%;
+    border:1px solid rgba(255,255,255,.35);background:transparent;color:rgba(255,255,255,.6);
+    font-family:'Work Sans',sans-serif;font-size:10px;font-weight:700;line-height:1;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .summary-field-help:hover,
+  .summary-field-help.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .summary-field-value{font-size:15px;font-weight:700;color:#fff;}
   .summary-field-value .summary-empty,
   .summary-field-tags .summary-empty{font-size:12.5px;color:rgba(255,255,255,.4);font-style:italic;font-weight:400;}
   .summary-field-tags{display:flex;flex-wrap:wrap;gap:6px;}
@@ -99,7 +108,8 @@
   .sum-tag.ind{background:var(--blue);color:var(--white);}
   .sum-tag.cat{background:var(--concrete);color:var(--navy);}
   .sum-tag.sub{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.25);}
-  .summary-field-note{font-size:11.5px;color:rgba(255,255,255,.45);line-height:1.4;margin-top:4px;}
+  .summary-field-note{font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.4;margin-top:6px;}
+  .summary-field-note[hidden]{display:none;}
 
   /* ---------- Intro ---------- */
   .intro{padding-bottom:32px;}
@@ -334,25 +344,6 @@
   }
   .input-field input:focus{border-color:var(--blue);}
 
-  /* ---------- Results ---------- */
-  .results-block{
-    background:var(--navy);border-radius:var(--radius-lg);padding:30px 32px;margin-top:44px;
-  }
-  .results-title{font-size:17px;font-weight:600;color:var(--white);margin-bottom:20px;}
-  .results-row{display:flex;gap:18px;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;}
-  .results-row:last-child{margin-bottom:0;}
-  .results-label{
-    flex-shrink:0;width:96px;font-size:11px;font-weight:600;text-transform:uppercase;
-    letter-spacing:0.04em;color:var(--concrete);padding-top:4px;
-  }
-  .results-value{font-size:14.5px;color:var(--white);}
-  .results-empty{font-size:13.5px;color:rgba(255,255,255,0.45);font-style:italic;}
-  .results-values{display:flex;flex-wrap:wrap;gap:6px;}
-  .res-tag{font-size:12.5px;font-weight:600;border-radius:100px;padding:5px 13px;}
-  .res-tag.ind{background:var(--blue);color:var(--white);}
-  .res-tag.cat{background:var(--concrete);color:var(--navy);}
-  .res-tag.sub{background:var(--white);color:var(--navy);}
-
   .ai-question{
     background:var(--steel);border-radius:var(--radius-sm);padding:12px 16px;margin-top:12px;
   }
@@ -491,12 +482,15 @@ const flatCategories = categoryData.map(c => ({ name: c.name, subs: c.subs }));
 const TAXONOMY_JSON = JSON.stringify({ industries: flatIndustries, categories: flatCategories });
 
 /* ===================== POWER AUTOMATE FLOW ===================== */
-/* One shared flow, same pattern as getMetricsInsights branching on "scope" —
-   this one branches on "entityType" (contacts/candidates/jobs/companies).
-   Paste the flow's HTTP-trigger URL below once it's built — see the
-   Cloudflare Worker note for why this should go through your Worker proxy
-   route rather than the raw Power Automate URL. */
-const FLOW_URL = 'PASTE_YOUR_WORKER_OR_FLOW_URL_HERE';
+/* One shared flow, same pattern as Top Talent Planner's getMetricsInsights —
+   branches on "entityType" (contacts/candidates/jobs/companies) the same way
+   that one branches on "scope". Called directly from the browser, same as
+   every other flow in Top Talent Planner — the trigger URL's own sig= is the
+   auth, no separate proxy/backend needed. Build the flow as an HTTP trigger
+   that takes { entityType, systemPrompt, conversation } and responds with
+   { "reply": "<raw JSON string matching the shape systemPrompt asks for>" }.
+   Paste its HTTP POST URL below once it's built. */
+const FLOW_URL = 'PASTE_YOUR_POWER_AUTOMATE_FLOW_URL_HERE';
 
 /* ===================== PER-ENTITY CONFIG ===================== */
 /* Everything that differs between Contacts / Candidates / Jobs / Companies
@@ -852,6 +846,20 @@ function switchEntityTab(entityId) {
 
 /* ===================== PER-ENTITY PANEL: BUILD + WIRE ===================== */
 
+function summaryLabelHtml(label, tip) {
+  const help = tip ? `<button type="button" class="summary-field-help" data-role="fieldHelp">?</button>` : '';
+  return `
+    <div class="summary-field-label-row">
+      <div class="summary-field-label">${label}</div>
+      ${help}
+    </div>
+  `;
+}
+
+function summaryNoteHtml(tip) {
+  return tip ? `<div class="summary-field-note" hidden>${tip.text}</div>` : '';
+}
+
 function initEntity(entityId) {
   const cfg = ENTITY_CONFIG[entityId];
   const root = document.getElementById('panel-' + entityId);
@@ -950,28 +958,6 @@ function initEntity(entityId) {
       </div>
     </div>
 
-    <div class="results-block" data-role="resultsBlock">
-      <div class="results-title">${cfg.resultsTitle}</div>
-      ${cfg.identityFields.map(f => `
-        <div class="results-row">
-          <div class="results-label">${f.resultLabel}</div>
-          <div class="results-value" data-role="res-${f.key}"><span class="results-empty">Not entered yet</span></div>
-        </div>
-      `).join('')}
-      <div class="results-row">
-        <div class="results-label">Industry</div>
-        <div class="results-values" data-role="resIndustry"><span class="results-empty">Not selected yet</span></div>
-      </div>
-      <div class="results-row">
-        <div class="results-label">Category</div>
-        <div class="results-values" data-role="resCategory"><span class="results-empty">Not selected yet</span></div>
-      </div>
-      <div class="results-row">
-        <div class="results-label">Subcategory</div>
-        <div class="results-values" data-role="resSubcategory"><span class="results-empty">Not selected yet</span></div>
-      </div>
-    </div>
-
     <div class="lookup-block" data-role="lookup">
       <div class="lookup-title">${cfg.lookupTitle}</div>
       <div class="lookup-sub">${cfg.lookupSub}</div>
@@ -988,27 +974,36 @@ function initEntity(entityId) {
   summaryRoot.innerHTML = `
     ${cfg.identityFields.map((f, i) => `
       <div class="summary-field">
-        <div class="summary-field-label">${f.resultLabel}</div>
+        ${summaryLabelHtml(f.resultLabel, i === 0 ? cfg.tips[0] : null)}
         <div class="summary-field-value" data-role="sum-res-${f.key}"><span class="summary-empty">Not entered yet</span></div>
-        ${i === 0 && cfg.tips[0] ? `<div class="summary-field-note">${cfg.tips[0].text}</div>` : ''}
+        ${summaryNoteHtml(i === 0 ? cfg.tips[0] : null)}
       </div>
     `).join('')}
     <div class="summary-field">
-      <div class="summary-field-label">Industry</div>
+      ${summaryLabelHtml('Industry', cfg.tips[1])}
       <div class="summary-field-tags" data-role="sumResIndustry"><span class="summary-empty">Not selected yet</span></div>
-      <div class="summary-field-note">${cfg.tips[1].text}</div>
+      ${summaryNoteHtml(cfg.tips[1])}
     </div>
     <div class="summary-field">
-      <div class="summary-field-label">Category</div>
+      ${summaryLabelHtml('Category', cfg.tips[2])}
       <div class="summary-field-tags" data-role="sumResCategory"><span class="summary-empty">Not selected yet</span></div>
-      <div class="summary-field-note">${cfg.tips[2].text}</div>
+      ${summaryNoteHtml(cfg.tips[2])}
     </div>
     <div class="summary-field">
-      <div class="summary-field-label">Subcategory</div>
+      ${summaryLabelHtml('Subcategory', cfg.tips[3])}
       <div class="summary-field-tags" data-role="sumResSubcategory"><span class="summary-empty">Not selected yet</span></div>
-      <div class="summary-field-note">${cfg.tips[3].text}</div>
+      ${summaryNoteHtml(cfg.tips[3])}
     </div>
   `;
+
+  summaryRoot.querySelectorAll('[data-role="fieldHelp"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const note = btn.closest('.summary-field').querySelector('.summary-field-note');
+      const isHidden = note.hidden;
+      note.hidden = !isHidden;
+      btn.classList.toggle('active', isHidden);
+    });
+  });
 
   const state = {
     identity: {},
@@ -1031,27 +1026,14 @@ function initEntity(entityId) {
 
   function updateResults() {
     cfg.identityFields.forEach(f => {
-      const el = root.querySelector(`[data-role="res-${f.key}"]`);
-      el.innerHTML = state.identity[f.key] ? state.identity[f.key] : '<span class="results-empty">Not entered yet</span>';
-
       const sumEl = summaryRoot.querySelector(`[data-role="sum-res-${f.key}"]`);
       sumEl.innerHTML = state.identity[f.key] ? state.identity[f.key] : '<span class="summary-empty">Not entered yet</span>';
     });
-
-    const resIndustry = root.querySelector('[data-role="resIndustry"]');
-    resIndustry.innerHTML = state.industries.size
-      ? [...state.industries].map(i => `<span class="res-tag ind">${i}</span>`).join('')
-      : '<span class="results-empty">Not selected yet</span>';
 
     const sumResIndustry = summaryRoot.querySelector('[data-role="sumResIndustry"]');
     sumResIndustry.innerHTML = state.industries.size
       ? [...state.industries].map(i => `<span class="sum-tag ind">${i}</span>`).join('')
       : '<span class="summary-empty">Not selected yet</span>';
-
-    const resCategory = root.querySelector('[data-role="resCategory"]');
-    resCategory.innerHTML = state.categories.size
-      ? [...state.categories].map(c => `<span class="res-tag cat">${c}</span>`).join('')
-      : '<span class="results-empty">Not selected yet</span>';
 
     const sumResCategory = summaryRoot.querySelector('[data-role="sumResCategory"]');
     sumResCategory.innerHTML = state.categories.size
@@ -1062,11 +1044,6 @@ function initEntity(entityId) {
     Object.keys(state.subcategories).forEach(cat => {
       state.subcategories[cat].forEach(s => allSubs.push(s));
     });
-    const resSubcategory = root.querySelector('[data-role="resSubcategory"]');
-    resSubcategory.innerHTML = allSubs.length
-      ? allSubs.map(s => `<span class="res-tag sub">${s}</span>`).join('')
-      : '<span class="results-empty">Not selected yet</span>';
-
     const sumResSubcategory = summaryRoot.querySelector('[data-role="sumResSubcategory"]');
     sumResSubcategory.innerHTML = allSubs.length
       ? allSubs.map(s => `<span class="sum-tag sub">${s}</span>`).join('')
