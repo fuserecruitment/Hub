@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fuse | Bullhorn Categorisation Journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --navy:#151A36;
+    --blue:#009CDD;
+    --concrete:#A2C8D8;
+    --steel:#E6EFF3;
+    --line:#CBD9E1;
+    --good:#2E7D5B;
+    --warn:#B23B3B;
+    --black:#000000;
+    --white:#FFFFFF;
+    --ink:#151A36;
+    --ink-soft:#5B6178;
+    --radius-lg:10px;
+    --radius-md:8px;
+    --radius-sm:7px;
+    --sidebar-w:300px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--steel);
+    color:var(--ink);
+    font-family:'Work Sans',sans-serif;
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3,h4{margin:0;color:var(--navy);font-weight:700;letter-spacing:-0.01em;}
+  p{margin:0;}
+  ul{margin:0;padding:0;list-style:none;}
+
+  .wrap{max-width:900px;margin:0 auto;}
+
+  /* ---------- Shell: sidebar + workspace (same component as Top Talent Planner) ---------- */
+  .shell{display:flex;min-height:100vh;}
+
+  .sidebar{
+    width:var(--sidebar-w);flex-shrink:0;
+    background:var(--navy);color:var(--white);
+    display:flex;flex-direction:column;
+    height:100vh;position:sticky;top:0;overflow:hidden;
+  }
+  .sidebar-scroll{flex:1;min-height:0;overflow-y:auto;}
+  .sidebar-brand{
+    padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1);text-align:center;
+  }
+  .sidebar-logo{display:block;width:96px;height:auto;margin:0 auto 14px;}
+  .sidebar-brand h1{font-size:16.5px;margin:0;color:#fff;}
+  .sidebar-brand .tag{font-size:11px;color:rgba(255,255,255,.55);margin-top:3px;}
+
+  .sidebar-block{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.08);}
+  .sidebar-block label{
+    display:block;font-size:10.5px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.06em;color:rgba(255,255,255,.5);margin-bottom:8px;
+  }
+  .sidebar-nav-btn{
+    display:block;width:100%;text-align:left;padding:10px 12px;margin-bottom:4px;border-radius:7px;border:none;
+    background:rgba(255,255,255,.06);color:rgba(255,255,255,.8);font-family:'Work Sans',sans-serif;
+    font-size:13.5px;font-weight:600;cursor:pointer;
+  }
+  .sidebar-nav-btn:hover{background:rgba(255,255,255,.12);color:#fff;}
+  .sidebar-nav-btn.active{background:var(--blue);color:#fff;}
+
+  .workspace{flex:1;min-width:0;padding:32px 36px 80px;}
+  .workspace-inner{max-width:900px;margin:0 auto;}
+
+  /* ---------- Intro ---------- */
+  .intro{padding-bottom:32px;}
+  .intro h1{font-size:28px;line-height:1.25;margin:0 0 10px;}
+  .intro p{color:var(--ink-soft);font-size:15px;}
+
+  .entity-panel[hidden]{display:none;}
+
+  @media(max-width:860px){
+    .shell{flex-direction:column;}
+    .sidebar{width:100%;height:auto;position:relative;}
+    .workspace{padding:24px 16px 60px;}
+  }
+
+  /* ---------- Journey rail ---------- */
+  .journey{position:relative;padding-bottom:60px;}
+  .rail-line{
+    position:absolute;left:39px;top:12px;bottom:12px;width:2px;
+    background:var(--line);z-index:0;
+  }
+  .step{
+    position:relative;display:flex;gap:26px;padding-bottom:48px;z-index:1;
+  }
+  .step:last-child{padding-bottom:0;}
+  .step-num{
+    flex-shrink:0;width:78px;height:78px;border-radius:50%;
+    background:var(--navy);color:var(--white);
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;font-weight:700;
+    position:relative;z-index:2;
+  }
+  .step-content{flex:1;padding-top:6px;}
+  .step-content.card{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);
+    padding:20px 22px;
+  }
+  .step-kicker{
+    font-size:12.5px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--blue);
+    margin-bottom:6px;
+  }
+  .step-title{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+  .step-instruction{font-size:15px;color:var(--ink);margin-bottom:4px;}
+  .step-note{font-size:13.5px;color:var(--ink-soft);margin-bottom:18px;}
+
+  .meaning-block{
+    background:var(--steel);border:1px solid var(--line);border-radius:var(--radius-md);
+    padding:16px 18px;margin-bottom:16px;
+  }
+  .meaning-label{
+    font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;
+    color:var(--ink-soft);margin-bottom:6px;
+  }
+  .meaning-text{font-size:14.5px;color:var(--ink);}
+  .meaning-text strong{color:var(--navy);font-weight:600;}
+
+  .ask-block{margin-bottom:18px;}
+  .ask-label{
+    font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;
+    color:var(--blue);margin-bottom:8px;
+  }
+  .ask-list{display:flex;flex-direction:column;gap:6px;}
+  .ask-item{
+    display:flex;gap:8px;font-size:14px;color:var(--ink);align-items:flex-start;
+  }
+  .ask-item .qmark{
+    flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(--steel);
+    color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;
+    margin-top:1px;
+  }
+
+  .callout{
+    background:var(--navy);border-radius:var(--radius-md);
+    padding:14px 18px;margin-bottom:18px;
+  }
+  .callout p{font-size:13.5px;color:var(--white);}
+  .callout strong{color:var(--concrete);}
+
+  /* ---------- Directory: industry groups ---------- */
+  .tile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  @media (max-width:700px){.tile-grid{grid-template-columns:repeat(2,1fr);}}
+  .tile{
+    background:var(--steel);border:1px solid transparent;border-radius:var(--radius-md);
+    padding:14px 16px;cursor:pointer;transition:border-color 0.2s, background 0.2s;
+  }
+  .tile:hover{border-color:var(--blue);}
+  .tile.open{background:var(--navy);border-color:var(--navy);}
+  .tile.open .tile-name{color:var(--white);}
+  .tile-name{font-size:14px;font-weight:600;color:var(--navy);}
+  .tile-count{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+  .tile.open .tile-count{color:var(--concrete);}
+
+  .expand-panel{
+    grid-column:1 / -1;
+    max-height:0;overflow:hidden;transition:max-height 0.3s ease;
+  }
+  .expand-panel-inner{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius-md);
+    padding:18px 20px;margin-top:4px;
+  }
+  .sub-block{margin-bottom:14px;}
+  .sub-block:last-child{margin-bottom:0;}
+  .sub-block-title{font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px;}
+  .chip-row{display:flex;flex-wrap:wrap;gap:7px;}
+  .chip{
+    font-size:13px;background:var(--steel);border-radius:100px;padding:6px 13px;color:var(--ink);
+  }
+
+  /* ---------- Selectable tiles (industry leaves, category) ---------- */
+  .chip.selectable{cursor:pointer;transition:background 0.15s,color 0.15s;}
+  .chip.selectable:hover{background:var(--concrete);}
+  .chip.picked{background:var(--blue);color:var(--white);font-weight:600;}
+
+  .pick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;align-items:start;}
+  @media (max-width:700px){.pick-grid{grid-template-columns:1fr;}}
+  .pick-tile{
+    background:var(--steel);border:2px solid transparent;border-radius:var(--radius-md);
+    padding:14px 40px 14px 16px;cursor:pointer;transition:all 0.15s;position:relative;
+  }
+  .pick-tile:hover{border-color:var(--blue);}
+  .pick-tile.picked{background:var(--blue);border-color:var(--blue);}
+  .pick-tile.picked .tile-name{color:var(--white);}
+  .pick-tile .tile-name{font-size:13.5px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+  .pick-tile .tile-desc{font-size:12px;color:var(--ink-soft);line-height:1.4;}
+  .pick-tile.picked .tile-desc{color:var(--white);opacity:.85;}
+  .pick-tile .check-dot{
+    position:absolute;top:10px;right:10px;width:16px;height:16px;border-radius:50%;
+    border:1.5px solid var(--concrete);background:var(--white);
+  }
+  .pick-tile.picked .check-dot{
+    background:var(--navy);border-color:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .pick-tile.picked .check-dot::after{content:'✓';font-size:10px;color:var(--white);}
+
+  .select-note{font-size:12.5px;color:var(--blue);font-weight:500;margin-top:12px;}
+  .select-placeholder{font-size:13.5px;color:var(--ink-soft);font-style:italic;}
+
+  /* ---------- Subcategory picker ---------- */
+  .sub-picker-block{margin-bottom:12px;}
+  .sub-picker-block:last-child{margin-bottom:0;}
+
+  .sub-dropdown{
+    background:var(--steel);border:2px solid transparent;border-radius:var(--radius-md);
+    overflow:hidden;transition:border-color 0.15s;
+  }
+  .sub-dropdown.open{border-color:var(--blue);}
+  .sub-dropdown-head{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 16px;cursor:pointer;
+  }
+  .sub-dropdown-title{font-size:13.5px;font-weight:600;color:var(--navy);}
+  .sub-dropdown-meta{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .sub-dropdown-count{
+    font-size:11.5px;font-weight:600;color:var(--blue);background:var(--white);
+    border-radius:100px;padding:3px 10px;white-space:nowrap;
+  }
+  .sub-dropdown-chevron{width:16px;height:16px;color:var(--ink-soft);transition:transform 0.2s;flex-shrink:0;}
+  .sub-dropdown.open .sub-dropdown-chevron{transform:rotate(180deg);}
+  .sub-dropdown-panel{max-height:0;overflow:hidden;transition:max-height 0.3s ease;background:var(--white);}
+  .sub-dropdown-panel-inner{padding:6px 16px 10px;}
+
+  .sub-pick-item{
+    display:flex;align-items:center;gap:11px;font-size:14px;color:var(--ink);
+    padding:9px 4px;border-bottom:1px solid rgba(21,26,54,0.08);cursor:pointer;
+  }
+  .sub-pick-item:last-child{border-bottom:none;}
+  .sub-pick-item .check-box{
+    flex-shrink:0;width:17px;height:17px;border-radius:5px;border:1.5px solid var(--concrete);
+    display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--white);
+  }
+  .sub-pick-item.picked{color:var(--navy);font-weight:600;}
+  .sub-pick-item.picked .check-box{background:var(--blue);border-color:var(--blue);}
+  .sub-pick-item.picked .check-box::after{content:'✓';}
+
+  /* ---------- Lookup ---------- */
+  .lookup-block{
+    background:var(--white);border:1px solid var(--line);border-top:3px solid var(--blue);
+    border-radius:var(--radius-lg);padding:30px 30px 26px;margin-top:8px;
+  }
+  .lookup-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+  .lookup-sub{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
+  .ask-row{display:flex;gap:10px;margin-bottom:16px;align-items:flex-start;}
+  .ask-row input{
+    flex:1;padding:13px 18px;border-radius:var(--radius-sm);
+    border:1.5px solid var(--line);background:var(--white);font-family:'Work Sans',sans-serif;
+    font-size:14.5px;color:var(--ink);outline:none;
+  }
+  .ask-row input:focus{border-color:var(--blue);}
+  .ask-row button{
+    flex-shrink:0;background:var(--blue);color:var(--white);border:none;border-radius:var(--radius-sm);
+    padding:13px 22px;font-family:'Work Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;
+    transition:opacity 0.15s;
+  }
+  .ask-row button:hover{opacity:.88;}
+  .ask-row button:disabled{background:var(--concrete);opacity:.5;cursor:not-allowed;}
+
+  .ask-status{font-size:13px;color:var(--ink-soft);min-height:18px;margin-bottom:6px;}
+
+  .ai-result{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius-md);padding:18px 20px;margin-top:6px;
+  }
+  .ai-result-row{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+  .ai-result-row:last-of-type{margin-bottom:0;}
+  .ai-result-label{
+    flex-shrink:0;width:88px;font-size:11px;font-weight:600;text-transform:uppercase;
+    letter-spacing:0.04em;color:var(--ink-soft);padding-top:5px;
+  }
+  .ai-result-values{display:flex;flex-wrap:wrap;gap:6px;flex:1;}
+  .ai-tag{
+    font-size:13px;font-weight:600;border-radius:100px;padding:6px 13px;color:var(--white);
+  }
+  .ai-tag.ind{background:var(--blue);}
+  .ai-tag.cat{background:var(--navy);}
+  .ai-tag.sub{background:var(--concrete);color:var(--navy);}
+  .ai-tag.unknown{background:var(--white);color:var(--ink-soft);border:1px dashed var(--concrete);}
+  .ai-explanation{
+    font-size:13.5px;color:var(--ink-soft);margin-top:14px;padding-top:14px;border-top:1px solid var(--steel);
+  }
+  .ai-error{font-size:13.5px;color:var(--warn);}
+
+  /* ---------- Step 1 inputs ---------- */
+  .input-pair{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px;}
+  .input-field{flex:1;min-width:220px;}
+  .input-field label{
+    display:block;font-size:11px;font-weight:600;color:var(--ink-soft);
+    text-transform:uppercase;letter-spacing:0.04em;margin-bottom:7px;
+  }
+  .input-field input{
+    width:100%;padding:12px 16px;border-radius:var(--radius-sm);
+    border:1.5px solid var(--line);background:var(--white);font-family:'Work Sans',sans-serif;
+    font-size:14.5px;color:var(--ink);outline:none;
+  }
+  .input-field input:focus{border-color:var(--blue);}
+
+  /* ---------- Results ---------- */
+  .results-block{
+    background:var(--navy);border-radius:var(--radius-lg);padding:30px 32px;margin-top:44px;
+  }
+  .results-title{font-size:17px;font-weight:600;color:var(--white);margin-bottom:20px;}
+  .results-row{display:flex;gap:18px;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;}
+  .results-row:last-child{margin-bottom:0;}
+  .results-label{
+    flex-shrink:0;width:96px;font-size:11px;font-weight:600;text-transform:uppercase;
+    letter-spacing:0.04em;color:var(--concrete);padding-top:4px;
+  }
+  .results-value{font-size:14.5px;color:var(--white);}
+  .results-empty{font-size:13.5px;color:rgba(255,255,255,0.45);font-style:italic;}
+  .results-values{display:flex;flex-wrap:wrap;gap:6px;}
+  .res-tag{font-size:12.5px;font-weight:600;border-radius:100px;padding:5px 13px;}
+  .res-tag.ind{background:var(--blue);color:var(--white);}
+  .res-tag.cat{background:var(--concrete);color:var(--navy);}
+  .res-tag.sub{background:var(--white);color:var(--navy);}
+
+  .ai-question{
+    background:var(--steel);border-radius:var(--radius-sm);padding:12px 16px;margin-top:12px;
+  }
+  .ai-question-label{
+    font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--blue);margin-bottom:4px;
+  }
+  .ai-question-text{font-size:14px;color:var(--navy);font-weight:500;margin-bottom:12px;}
+  .ai-answer-row{display:flex;gap:8px;}
+  .ai-answer-row input{
+    flex:1;padding:10px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--line);
+    background:var(--white);font-family:'Work Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;
+  }
+  .ai-answer-row input:focus{border-color:var(--blue);}
+  .ai-answer-row button{
+    flex-shrink:0;background:var(--blue);color:var(--white);border:none;border-radius:var(--radius-sm);
+    padding:10px 20px;font-family:'Work Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;
+    transition:opacity 0.15s;
+  }
+  .ai-answer-row button:hover{opacity:.88;}
+  .ai-answer-row button:disabled{background:var(--concrete);opacity:.5;cursor:not-allowed;}
+
+  .ai-restart{
+    font-size:12.5px;color:var(--blue);font-weight:600;margin-top:14px;cursor:pointer;
+    display:inline-block;
+  }
+  .ai-restart:hover{text-decoration:underline;}
+
+  /* ---------- Sidebar field guide ---------- */
+  .sidebar-guide-item{margin-bottom:13px;}
+  .sidebar-guide-item:last-child{margin-bottom:0;}
+  .sidebar-guide-item .sg-label{font-size:12.5px;font-weight:700;color:#fff;margin-bottom:2px;}
+  .sidebar-guide-item .sg-text{font-size:12px;color:rgba(255,255,255,.55);line-height:1.45;}
+
+  footer{border-top:1px solid var(--line);padding:22px 0;margin-top:20px;}
+  footer .wrap{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);flex-wrap:wrap;gap:8px;}
+
+  @media (max-width:700px){
+    .step{gap:16px;}
+    .step-num{width:56px;height:56px;font-size:20px;}
+    .rail-line{left:27px;}
+    .intro h1{font-size:24px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-scroll">
+      <div class="sidebar-brand">
+        <img src="data:image/png;base64,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" alt="Fuse" class="sidebar-logo">
+        <h1>Fuse</h1>
+        <div class="tag">Bullhorn categorisation</div>
+      </div>
+
+      <div class="sidebar-block">
+        <label>Record type</label>
+        <div id="entityNav"></div>
+      </div>
+
+      <div class="sidebar-block">
+        <label>Field guide</label>
+        <div id="sidebarGuide"></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="workspace">
+    <div class="workspace-inner">
+
+      <div class="intro">
+        <h1>Four fields. Any record. Click your way down.</h1>
+        <p>Pick a record type from the sidebar, then answer each step as you go. Your categorisation builds itself at the bottom.</p>
+      </div>
+
+      <div class="entity-panel" id="panel-contacts" data-entity="contacts"></div>
+      <div class="entity-panel" id="panel-candidates" data-entity="candidates" hidden></div>
+      <div class="entity-panel" id="panel-jobs" data-entity="jobs" hidden></div>
+      <div class="entity-panel" id="panel-companies" data-entity="companies" hidden></div>
+
+      <footer>
+        <div class="wrap">
+          <span>Fuse Recruitment</span>
+          <span>Internal consultant use</span>
+        </div>
+      </footer>
+
+    </div>
+  </main>
+</div>
+
+<script>
+/* ===================== SHARED TAXONOMY ===================== */
+/* Same industries/departments apply regardless of which entity you're
+   categorising — a department like "Accounting & Finance" means the same
+   thing whether it's who a contact hires for, what a candidate does, what
+   a vacancy is for, or what a company hires into. Edit these once here and
+   every tab picks up the change automatically. */
+
+const industryData = [
+  { group: "Insurance", items: ["Insurance – Broking","Insurance – Claims & Service Providers","Insurance – Insurance Building & Restoration","Insurance – Insurer","Insurance – Underwriting","Insurance – Workers Compensation","Insurance – Other"] },
+  { group: "Financial Services", items: ["Financial Services – Financial Planning","Financial Services – Investments","Financial Services – Mortgage Broking","Financial Services – Private Wealth","Financial Services – Superannuation","Financial Services – Other"] },
+  { group: "Infrastructure", items: ["Infrastructure – Power","Infrastructure – Transport","Infrastructure – Waste","Infrastructure – Water","Infrastructure – Other"] },
+  { group: "Manufacturing & Operations", subgroups: [
+      { title: "FMCG", items: ["FMCG – Food & Beverage","FMCG – Household & Personal Care","FMCG – Packaging"] },
+      { title: "Health & Life Sciences", items: ["Health & Life Sciences – Biotech","Health & Life Sciences – Medical Device","Health & Life Sciences – Pharmaceutical","Health & Life Sciences – Supplements"] },
+      { title: "Industrial & Heavy", items: ["Industrial & Heavy – Building Materials","Industrial & Heavy – Chemical","Industrial & Heavy – Electrical","Industrial & Heavy – Equipment & Machinery","Industrial & Heavy – Steel"] }
+    ],
+    items: ["Manufacturing & Operations – Logistics, Transport & Warehousing","Manufacturing & Operations – Other"]
+  },
+  { group: "Renewable Energy", items: ["Renewable Energy – Grid Battery Storage","Renewable Energy – Hydropower","Renewable Energy – Solar","Renewable Energy – Wind","Renewable Energy – Other"] },
+  { group: "Trades & Services", items: ["Trades & Services – Construction","Trades & Services – Electrical","Trades & Services – Facades","Trades & Services – Maintenance","Trades & Services – Plumbing","Trades & Services – Other"] },
+  { group: "Technology", items: ["Technology – Education","Technology – Financial Services","Technology – Infrastructure","Technology – Insurance","Technology – IT Services","Technology – Manufacturing & Operations","Technology – Renewable Energy","Technology – Retail","Technology – Superannuation","Technology – Utilities","Technology – Other"] }
+];
+
+const categoryData = [
+  { name: "NEW: Accounting & Finance", desc: "A business's internal accounting and finance team. Found in almost every business.", subs: ["Accounts Payable","Account Receivable / Credit Control","Payroll","Assistant Accountants","Financial & Management Accounting","Audit (Internal / External)","Taxation","Treasury","Risk & Compliance","Contracts Management","Other"] },
+  { name: "NEW: Administration & Business Support", desc: "General administrative and business support functions. Found in almost every business.", subs: ["Administrative Assistants","Contracts Administration","Client & Sales Administration","Data Entry & Word Processing","Legal","Office Management","PA EA & Secretarial","Receptionists","Records Management & Document Control","Risk & Compliance","Other"] },
+  { name: "NEW: Call Centre & Customer Service", desc: "Customer service roles, from within a business to large dedicated call centre environments.", subs: ["Collections","Customer Service – Call Centre","Customer Service – Customer Facing","Inbound Sales","Outbound Sales","Team Leaders / Supervisors","Other"] },
+  { name: "NEW: Engineering & Technical", desc: "Engineering and technical roles, found across a wide range of industries.", subs: ["Aerospace Engineering","Automotive Engineering","Building Services Engineering","Chemical Engineering","Civil / Structural Engineering","Electrical / Electronic Engineering","Engineering Drafting","Environmental Engineering","Field Engineering","Industrial Engineering","Management","Mechanical Engineering","Maintenance","Materials Handling Engineering","Process Engineering","Project Engineering","Supervisors","Systems Engineering","Water & Waste Engineering","Other"] },
+  { name: "NEW: Executive & Leadership", desc: "Executive and director level roles, found across most businesses.", subs: ["Board Appointments","CEO","COO / MD","CFO / Finance Executives","CMO / Marketing Executives","CHRO / People & Culture Leaders","General / Business Unit Manager","Strategy & Transformation Leaders","Other"] },
+  { name: "NEW: Financial Services", desc: "Technical finance roles, most often seen within finance or insurance businesses.", subs: ["Banking","Client Services","Corporate Finance & Investment Banking","Financial Planning","Funds Management","Mortgage Broking","Settlements","Stockbroking & Trading","Superannuation","Other"] },
+  { name: "NEW: Human Resources & Recruitment", desc: "The people function. Found in almost every business, regardless of industry.", subs: ["Consulting & Generalist HR","Industrial & Employee Relations","Learning & Organisational Development","Recruitment – Agency & Internal","Remuneration & Benefits","OH&S / WHS","Other"] },
+  { name: "NEW: Insurance", desc: "Roles specific to insurance businesses, from underwriting through to claims.", subs: ["Actuarial","Assessment","Broking","Claims","Loss Adjusting","Management","Underwriting","Workers Compensation","Other"] },
+  { name: "NEW: Manufacturing & Operations", desc: "Production and operations roles, found within manufacturing and industrial businesses.", subs: ["Assembly & Process Work","Forklift","Lean / Continuous Improvement","Machine Operators","Management","Pickers & Packers","Production / Operations Management","Production Planning & Scheduling","Purchasing Procurement & Inventory","Quality Assurance & Control","WHS / HSE","Other"] },
+  { name: "NEW: Marketing & Communications", desc: "The brand and communications function. Found across most businesses.", subs: ["Brand Management","Digital Marketing","Direct Marketing & CRM","Internal Marketing","Management","Market Research & Analysis","Marketing Assistants / Coordinators","Marketing Communications","Product Management & Development","Public Relations","Other"] },
+  { name: "NEW: Sales & Business Development", desc: "Revenue generating roles, found across most businesses.", subs: ["Account & Relationship Management","Analysis & Reporting","Management","New Business Development","Sales Coordinators","Sales Reps / Consultants","Other"] },
+  { name: "NEW: Scientific", desc: "Technical and research roles, specific to scientific, laboratory or research based businesses.", subs: ["Analytical Services","Biological & Biomedical Sciences","Biotechnology & Genetics","Chemistry & Physics","Clinical Trials & Research","Environmental Earth & Geosciences","Food Technology & Safety","Laboratory & Technical Services","Manufacturing Science","Materials Science","Mathematics Statistics & Modelling","Microbiology","Modelling & Simulation","Quality Assurance","Quality Control","Regulatory Affairs","Research and Development","Sales & Commercial","Other"] },
+  { name: "NEW: Supply Chain & Logistics", desc: "Roles that move goods from supplier to customer, found within logistics, freight and warehousing heavy businesses.", subs: ["Drivers","Fleet Management","Forklift","Freight / Cargo Forwarding","Import / Export & Customs","Inventory & Stock Control","Management","Operations Management","Pickers & Packers","Purchasing & Procurement","Supply Chain Planning & Scheduling","Transport / Road Rail Maritime & Aviation","Warehousing Storage & Distribution","Other"] },
+  { name: "NEW: Technology & Transformation", desc: "The technology function. Found across most businesses, regardless of industry.", subs: ["Software Engineering & Development","Infrastructure Security & Operations","Project Services & Transformation","Data Digital & AI"] },
+  { name: "NEW: Trades & Labour", desc: "Hands on, skilled trade roles, most often found within trades, construction and industrial businesses.", subs: ["Air Conditioning & Refrigeration","Automotive Trades","Bakers & Pastry Chefs","Building Trades","Butchers","Cabinet Making","Carpentry","Cleaning Services","Electrical Trades","Fitters Turners & Machinists","Gardening & Landscaping","Labourers","Maintenance & Handyman Services","Mechanical Trades & Maintenance","Painters & Sign Writers","Plumbers","Printing & Publishing Services","Technicians","Welders & Boilermakers","Other"] }
+];
+
+const flatIndustries = [];
+industryData.forEach(g => {
+  (g.items||[]).forEach(i => flatIndustries.push(i));
+  (g.subgroups||[]).forEach(sg => sg.items.forEach(i => flatIndustries.push(i)));
+});
+const flatCategories = categoryData.map(c => ({ name: c.name, subs: c.subs }));
+const TAXONOMY_JSON = JSON.stringify({ industries: flatIndustries, categories: flatCategories });
+
+/* ===================== POWER AUTOMATE FLOW ===================== */
+/* One shared flow, same pattern as getMetricsInsights branching on "scope" —
+   this one branches on "entityType" (contacts/candidates/jobs/companies).
+   Paste the flow's HTTP-trigger URL below once it's built — see the
+   Cloudflare Worker note for why this should go through your Worker proxy
+   route rather than the raw Power Automate URL. */
+const FLOW_URL = 'PASTE_YOUR_WORKER_OR_FLOW_URL_HERE';
+
+/* ===================== PER-ENTITY CONFIG ===================== */
+/* Everything that differs between Contacts / Candidates / Jobs / Companies
+   lives here — copy, field labels, and the AI system prompt. The taxonomy
+   and all the rendering/interaction logic below is shared and untouched. */
+
+const ENTITY_CONFIG = {
+
+  contacts: {
+    tabLabel: "Contacts",
+    resultsTitle: "Your contact categorisation",
+    identityFields: [
+      { key: "title", label: "Job Title", resultLabel: "Job Title", placeholder: "e.g. Financial Controller" },
+      { key: "company", label: "Company Name", resultLabel: "Company", placeholder: "e.g. Digger Australia" }
+    ],
+    step1: {
+      kicker: "Bullhorn field",
+      title: "Job Title & Company",
+      meaning: "The contact's <strong>own</strong> job title, and the business they work for. This tells us what they do, nothing about who they hire.",
+      ask: [
+        "What does their email signature or LinkedIn say their title is?",
+        "Is this their exact title, not a general description like \"manager\"?"
+      ],
+      instruction: "Enter their job title and the name of the business they work for."
+    },
+    step2: {
+      meaning: "The sector <strong>the business</strong> operates in. Not the contact's role, the business they work for.",
+      ask: [
+        "What does this business actually do or sell?",
+        "If a stranger asked what industry this company is in, what would you say?"
+      ],
+      instruction: "Tap a group to open it, then click the industry that fits best. Best practice is to pick one, only select more than one if you genuinely can't choose a single best match."
+    },
+    step3: {
+      callout: "<strong>Not about the contact.</strong> Category is not what the contact themselves does, it's which department, or departments, they are responsible for hiring into.",
+      meaning: "The department, or departments, this contact <strong>recruits for</strong>. This is what tells us the type of candidate they will want to see.",
+      ask: [
+        "Whose vacancies does this contact own or approve?",
+        "If they sent us a job spec tomorrow, which team would it be for?",
+        "Do they hire into more than one department? If so, select all of them."
+      ],
+      instruction: "Click every department this contact hires for."
+    },
+    step4: {
+      meaning: "The <strong>specific roles</strong>, within that department, this contact is most likely to be hiring for right now.",
+      ask: [
+        "Of the roles listed under this department, which has this contact actually mentioned or hired for before?",
+        "Am I picking the closest fit, or the actual role? Use Other only if nothing fits."
+      ],
+      instruction: "Open each department below and tick every role that applies."
+    },
+    lookupTitle: "Still not sure? Describe the contact instead.",
+    lookupSub: "Write it in your own words. We'll tell you what to enter in each field.",
+    lookupPlaceholder: "e.g. She's the HR manager at an insurance company, hires for recruitment and payroll",
+    tips: [
+      { label: "Job Title", text: "The contact's own job title." },
+      { label: "Industry", text: "The sector the business operates in." },
+      { label: "Category", text: "The department, or departments, this contact recruits for." },
+      { label: "Subcategory", text: "The specific roles, within that department, this contact is most likely to be hiring for right now." },
+      { label: "Search", text: "turns a plain description into the right fields." }
+    ],
+    systemPromptTemplate: `You help recruitment consultants at Fuse Recruitment, an Australian agency, categorise a contact in Bullhorn.
+You will be given a free-text description of a contact, written by the consultant in their own words. The conversation may include earlier turns where you already asked a question and the consultant has now answered it.
+You must choose values ONLY from the taxonomy below. Never invent a value that is not listed.
+
+TAXONOMY (JSON):
+__TAXONOMY_JSON__
+
+Critical rule, read carefully: a contact's job title and employer tell you about the CONTACT and the BUSINESS. They do NOT tell you which department the contact recruits for. Never infer category or subcategory from what a job title sounds like it does.
+- WRONG: "Production Manager" → assume category is Manufacturing & Operations, because that is what a production manager does.
+- WRONG: "Talent Acquisition Manager" or "HR Manager" → assume category is Human Resources & Recruitment, because that is the contact's own department.
+- RIGHT: category and subcategory only get filled in when the consultant has explicitly said, in some form, who the contact hires for, e.g. "hires machine operators and forklift drivers", "recruits for the finance team", "brings on graduate engineers". A job title and company name alone is NEVER enough to determine category or subcategory, even if the title sounds directly related to a category.
+- If all you have is a job title and/or employer, treat category and subcategory as unresolved and ask who the contact actually recruits for. Do not guess based on the title sounding related to a category.
+
+Vague answers are not real information. If the consultant says something like "hires across the whole business", "recruits for everything", or "all departments", do not select every category as a result, that is not a genuine answer and ticking every box is not useful to anyone. Treat it the same as not having an answer: keep category unresolved (or, if a couple of departments were named, use only those) and ask for two or three concrete examples of the roles or teams they hire for most often.
+
+Subcategory always needs a real answer before you are done. If you have selected one or more categories but do not have enough to choose a specific subcategory within them, you must still ask a question, do not settle for leaving subcategory empty with only an explanation. The question should ask specifically what roles or job titles the contact is hiring for, since that is what determines subcategory.
+
+Rules for each field:
+- "industry": the sector the CONTACT'S BUSINESS operates in. This can reasonably be inferred from the business name or description. Choose exactly one value from "industries". If genuinely unclear, use null.
+- "category": the department(s) the contact is RESPONSIBLE FOR HIRING INTO, stated or clearly implied by specific detail the consultant gave about their hiring activity, never inferred from their own job title alone and never defaulted to "all" because of a vague answer. Choose one or more values from the category "name" fields. If not explicitly and specifically given, use an empty array.
+- "subcategory": the specific roles within the chosen category/categories that the contact hires for, based on what the consultant actually said about the roles involved. Each value must belong to the "subs" list of a chosen category. This should almost always need at least one follow-up question, since consultants rarely volunteer this level of detail unprompted.
+- "explanation": only used once every field that can reasonably be resolved has been resolved. Maximum two short sentences, plain Australian English, no jargon.
+- "question": if industry, category, or subcategory is still unresolved (including subcategory alone, even if industry and category are done), ask exactly ONE short, specific, plain-English question that would give you what you need. If category or subcategory is missing, always ask what specific roles or teams the contact recruits for, never a question that could be answered by restating their own job title. Ask about one thing at a time. Only set this to null once industry, category, and subcategory are all genuinely resolved.
+
+Respond with ONLY raw JSON, no markdown fences, no preamble, matching exactly this shape:
+{"industry": string|null, "category": string[], "subcategory": string[], "explanation": string|null, "question": string|null}`
+  },
+
+  candidates: {
+    tabLabel: "Candidates",
+    resultsTitle: "Your candidate categorisation",
+    identityFields: [
+      { key: "title", label: "Current / Most Recent Title", resultLabel: "Current Title", placeholder: "e.g. Payroll Officer" },
+      { key: "company", label: "Current / Most Recent Employer", resultLabel: "Employer", placeholder: "e.g. Digger Australia" }
+    ],
+    step1: {
+      kicker: "Bullhorn field",
+      title: "Current Title & Employer",
+      meaning: "The candidate's <strong>own</strong> most recent job title, and who they work (or worked) for. This tells us their background, not what roles they're looking for.",
+      ask: [
+        "What does their CV or LinkedIn list as their most recent title?",
+        "Is this their actual title, not a general description like \"specialist\"?"
+      ],
+      instruction: "Enter their most recent job title and the name of the business they work (or worked) for."
+    },
+    step2: {
+      meaning: "The sector this candidate has experience in, based on their current or most recent employer.",
+      ask: [
+        "What does their current or most recent employer actually do or sell?",
+        "If a stranger asked what industry this person works in, what would you say?"
+      ],
+      instruction: "Tap a group to open it, then click the industry that fits best. Best practice is to pick one, only select more than one if you genuinely can't choose a single best match."
+    },
+    step3: {
+      callout: "<strong>About the candidate's own experience.</strong> Category is the type of work this candidate actually does themselves, not a business's hiring needs.",
+      meaning: "The department, or departments, this candidate has <strong>genuine experience working in</strong>. This is what tells us the type of roles to put them forward for.",
+      ask: [
+        "What team or function have they actually worked in?",
+        "Does their title map directly to a department — e.g. a Payroll Officer to Accounting & Finance?",
+        "Have they worked across more than one department? If so, select all that apply."
+      ],
+      instruction: "Click every department this candidate has genuine experience in."
+    },
+    step4: {
+      meaning: "The <strong>specific roles</strong>, within that department, this candidate has actually done or is qualified for.",
+      ask: [
+        "Of the roles listed under this department, which matches what they've actually done?",
+        "Am I picking the closest fit, or their actual role? Use Other only if nothing fits."
+      ],
+      instruction: "Open each department below and tick every role that applies."
+    },
+    lookupTitle: "Still not sure? Describe the candidate instead.",
+    lookupSub: "Write it in your own words. We'll tell you what to enter in each field.",
+    lookupPlaceholder: "e.g. He's a payroll officer at an insurance company, has done accounts payable too",
+    tips: [
+      { label: "Current Title", text: "The candidate's own most recent job title." },
+      { label: "Industry", text: "The sector their current or most recent employer operates in." },
+      { label: "Category", text: "The department, or departments, this candidate has genuine experience in." },
+      { label: "Subcategory", text: "The specific roles, within that department, this candidate has actually done." },
+      { label: "Search", text: "turns a plain description into the right fields." }
+    ],
+    systemPromptTemplate: `You help recruitment consultants at Fuse Recruitment, an Australian agency, categorise a candidate in Bullhorn.
+You will be given a free-text description of a candidate, written by the consultant in their own words. The conversation may include earlier turns where you already asked a question and the consultant has now answered it.
+You must choose values ONLY from the taxonomy below. Never invent a value that is not listed.
+
+TAXONOMY (JSON):
+__TAXONOMY_JSON__
+
+Critical rule, read carefully: unlike a hiring contact, a candidate's own current or most recent job title IS a direct signal for category and subcategory — it describes the type of work THEY do, which is exactly what these fields capture for a candidate record.
+- RIGHT: "Payroll Officer" at an insurance company → category "NEW: Accounting & Finance", subcategory "Payroll". The title directly tells you their specialisation.
+- RIGHT: "Site Engineer" → category "NEW: Engineering & Technical", subcategory whichever engineering discipline fits (ask if the discipline itself is unclear, e.g. civil vs mechanical).
+- Still ask when the title alone is too generic to map to a specific department or role, e.g. "Manager", "Consultant", "Officer" with no further context — these need a follow-up question rather than a guess.
+- Industry should reflect the sector of their current or most recent employer, not necessarily every industry they've ever worked in.
+
+Vague answers are not real information. If the consultant says something like "does a bit of everything" or "open to anything", do not select every category, that is not a genuine answer and ticking every box is not useful to anyone. Treat it the same as not having an answer: keep category unresolved (or, if a couple of departments were named, use only those) and ask for their actual title or the type of work they've done most recently.
+
+Subcategory always needs a real answer before you are done. If you have selected one or more categories but do not have enough to choose a specific subcategory within them, you must still ask a question, do not settle for leaving subcategory empty with only an explanation.
+
+Rules for each field:
+- "industry": the sector of the candidate's current or most recent employer. Choose exactly one value from "industries". If genuinely unclear, use null.
+- "category": the department(s) that reflect the type of work this candidate actually does, drawn from their stated title, background, or experience. Choose one or more values from the category "name" fields. If the description is too vague to map confidently, use an empty array and ask.
+- "subcategory": the specific role(s) within the chosen category/categories that best match this candidate's actual experience. Each value must belong to the "subs" list of a chosen category. Ask a follow-up if the title alone doesn't map cleanly to one listed subcategory.
+- "explanation": only used once every field that can reasonably be resolved has been resolved. Maximum two short sentences, plain Australian English, no jargon.
+- "question": if industry, category, or subcategory is still unresolved, ask exactly ONE short, specific, plain-English question that would give you what you need. Ask about one thing at a time. Only set this to null once industry, category, and subcategory are all genuinely resolved.
+
+Respond with ONLY raw JSON, no markdown fences, no preamble, matching exactly this shape:
+{"industry": string|null, "category": string[], "subcategory": string[], "explanation": string|null, "question": string|null}`
+  },
+
+  jobs: {
+    tabLabel: "Jobs",
+    resultsTitle: "Your job categorisation",
+    identityFields: [
+      { key: "title", label: "Job Title", resultLabel: "Job Title", placeholder: "e.g. Credit Controller" },
+      { key: "company", label: "Company Name", resultLabel: "Company", placeholder: "e.g. Digger Australia" }
+    ],
+    step1: {
+      kicker: "Bullhorn field",
+      title: "Job Title & Company",
+      meaning: "The title of this <strong>specific vacancy</strong>, and the business hiring for it. This tells us what the role is, not who's applying.",
+      ask: [
+        "What's the exact job title on this vacancy?",
+        "What's the name of the business doing the hiring?"
+      ],
+      instruction: "Enter the vacancy's job title and the name of the hiring business."
+    },
+    step2: {
+      meaning: "The sector <strong>the hiring business</strong> operates in.",
+      ask: [
+        "What does the hiring business actually do or sell?",
+        "If a stranger asked what industry this company is in, what would you say?"
+      ],
+      instruction: "Tap a group to open it, then click the industry that fits best. Best practice is to pick one, only select more than one if you genuinely can't choose a single best match."
+    },
+    step3: {
+      callout: "<strong>About the role, not the hiring manager.</strong> Category is which department this vacancy sits within, not the job title of whoever is hiring for it.",
+      meaning: "The <strong>department this vacancy sits within</strong>. This is what tells us the type of candidate this role needs.",
+      ask: [
+        "Which team will this person actually join?",
+        "If they start Monday, whose org chart are they on?"
+      ],
+      instruction: "Click every department this vacancy could reasonably sit under (usually just one)."
+    },
+    step4: {
+      meaning: "The <strong>specific role type</strong> this vacancy is for.",
+      ask: [
+        "Which listed role is the closest match to this vacancy's day-to-day duties?",
+        "Am I picking the closest fit, or the exact title? Use Other only if nothing fits."
+      ],
+      instruction: "Open the department below and tick the role that applies."
+    },
+    lookupTitle: "Still not sure? Describe the vacancy instead.",
+    lookupSub: "Write it in your own words. We'll tell you what to enter in each field.",
+    lookupPlaceholder: "e.g. Credit controller role at an insurance company, part of the finance team",
+    tips: [
+      { label: "Job Title", text: "The exact title of this specific vacancy." },
+      { label: "Industry", text: "The sector the hiring business operates in." },
+      { label: "Category", text: "The department this vacancy sits within." },
+      { label: "Subcategory", text: "The specific role type this vacancy is for." },
+      { label: "Search", text: "turns a plain description into the right fields." }
+    ],
+    systemPromptTemplate: `You help recruitment consultants at Fuse Recruitment, an Australian agency, categorise a job vacancy in Bullhorn.
+You will be given a free-text description of a vacancy, written by the consultant in their own words. The conversation may include earlier turns where you already asked a question and the consultant has now answered it.
+You must choose values ONLY from the taxonomy below. Never invent a value that is not listed.
+
+TAXONOMY (JSON):
+__TAXONOMY_JSON__
+
+Critical rule, read carefully: for a job vacancy, the job title itself IS a direct signal for category and subcategory — it describes exactly what department and role this vacancy sits within.
+- RIGHT: a "Credit Controller" vacancy → category "NEW: Accounting & Finance", subcategory "Account Receivable / Credit Control". The title directly tells you the role.
+- RIGHT: a "Warehouse Team Leader" vacancy → category "NEW: Supply Chain & Logistics" or "NEW: Manufacturing & Operations" depending on context — ask if the business context doesn't make it obvious which.
+- Still ask when the title alone is too generic, e.g. "Coordinator", "Officer", "Manager" with no department named — these need a follow-up question rather than a guess.
+- Industry should reflect the sector of the hiring business, not the type of role.
+
+Vague answers are not real information. If the consultant says something like "a few different roles" without naming them, do not select every category, that is not a genuine answer. Keep category unresolved (or use only the departments actually named) and ask for the specific job title or duties.
+
+Subcategory always needs a real answer before you are done. If you have selected one or more categories but do not have enough to choose a specific subcategory within them, you must still ask a question, do not settle for leaving subcategory empty with only an explanation.
+
+Rules for each field:
+- "industry": the sector of the business hiring for this vacancy. Choose exactly one value from "industries". If genuinely unclear, use null.
+- "category": the department(s) this vacancy sits within, drawn from the job title or described duties. Choose one or more values from the category "name" fields. If too vague to map confidently, use an empty array and ask.
+- "subcategory": the specific role(s) within the chosen category/categories that best match this vacancy. Each value must belong to the "subs" list of a chosen category. Ask a follow-up if the title alone doesn't map cleanly to one listed subcategory.
+- "explanation": only used once every field that can reasonably be resolved has been resolved. Maximum two short sentences, plain Australian English, no jargon.
+- "question": if industry, category, or subcategory is still unresolved, ask exactly ONE short, specific, plain-English question that would give you what you need. Ask about one thing at a time. Only set this to null once industry, category, and subcategory are all genuinely resolved.
+
+Respond with ONLY raw JSON, no markdown fences, no preamble, matching exactly this shape:
+{"industry": string|null, "category": string[], "subcategory": string[], "explanation": string|null, "question": string|null}`
+  },
+
+  companies: {
+    tabLabel: "Companies",
+    resultsTitle: "Your company categorisation",
+    identityFields: [
+      { key: "company", label: "Company Name", resultLabel: "Company Name", placeholder: "e.g. Digger Australia" }
+    ],
+    step1: {
+      kicker: "Bullhorn field",
+      title: "Company Name",
+      meaning: "The business itself, <strong>as a whole</strong> — not any one person there.",
+      ask: [
+        "What's this company's registered or trading name?"
+      ],
+      instruction: "Enter the company's name."
+    },
+    step2: {
+      meaning: "The sector this business operates in, <strong>overall</strong>.",
+      ask: [
+        "What does this business actually do or sell?",
+        "If a stranger asked what industry this company is in, what would you say?"
+      ],
+      instruction: "Tap a group to open it, then click the industry that fits best. Best practice is to pick one, only select more than one if you genuinely can't choose a single best match."
+    },
+    step3: {
+      callout: "<strong>The company's overall footprint.</strong> Category is which department(s) this business, as a whole, typically hires into — built up from everyone we've dealt with there, not just one contact.",
+      meaning: "The department, or departments, this business <strong>typically hires into</strong>.",
+      ask: [
+        "Across everyone we've dealt with at this business, which departments come up again and again?",
+        "Do they hire across more than one department? If so, select all of them."
+      ],
+      instruction: "Click every department this business typically hires into."
+    },
+    step4: {
+      meaning: "The <strong>specific roles</strong> this business most commonly hires for, within those departments.",
+      ask: [
+        "Of the roles listed, which has this business actually hired for before?",
+        "Am I picking the closest fit, or the actual role? Use Other only if nothing fits."
+      ],
+      instruction: "Open each department below and tick every role that applies."
+    },
+    lookupTitle: "Still not sure? Describe the business instead.",
+    lookupSub: "Write it in your own words. We'll tell you what to enter in each field.",
+    lookupPlaceholder: "e.g. Mining equipment manufacturer, we've placed finance and engineering roles there before",
+    tips: [
+      { label: "Company Name", text: "The business itself, as a whole." },
+      { label: "Industry", text: "The sector this business operates in." },
+      { label: "Category", text: "The department(s) this business typically hires into." },
+      { label: "Subcategory", text: "The specific roles this business most commonly hires for." },
+      { label: "Search", text: "turns a plain description into the right fields." }
+    ],
+    systemPromptTemplate: `You help recruitment consultants at Fuse Recruitment, an Australian agency, categorise a company (client business) in Bullhorn.
+You will be given a free-text description of a company, written by the consultant in their own words. The conversation may include earlier turns where you already asked a question and the consultant has now answered it.
+You must choose values ONLY from the taxonomy below. Never invent a value that is not listed.
+
+TAXONOMY (JSON):
+__TAXONOMY_JSON__
+
+Critical rule, read carefully: a company has no single job title to go on, so category and subcategory can only be filled in from what the consultant explicitly says about who the business hires, built up across everyone dealt with there. Never guess a company's hiring departments purely from its industry or what it sells.
+- WRONG: a mining equipment manufacturer → assume category is Manufacturing & Operations, just because that is what the industry sounds like it would need.
+- RIGHT: category and subcategory only get filled in when the consultant has explicitly said, in some form, which departments this business hires into, e.g. "we've placed finance and HR roles there", "they only ever come to us for engineers". Industry and what the business does is NEVER enough on its own to determine category or subcategory.
+- If all you have is the company's name, website, or what it does, treat category and subcategory as unresolved and ask which departments Fuse has actually dealt with at this business.
+
+Vague answers are not real information. If the consultant says something like "they hire for everything" or "all sorts of roles", do not select every category, that is not a genuine answer. Keep category unresolved (or use only the departments actually named) and ask for two or three concrete examples of roles or teams this business has hired for.
+
+Subcategory always needs a real answer before you are done. If you have selected one or more categories but do not have enough to choose a specific subcategory within them, you must still ask a question, do not settle for leaving subcategory empty with only an explanation.
+
+Rules for each field:
+- "industry": the sector this business operates in overall. This can reasonably be inferred from the business name or description. Choose exactly one value from "industries". If genuinely unclear, use null.
+- "category": the department(s) this business, as a whole, is known to hire into, stated or clearly implied by specific detail the consultant gave. Never inferred from industry or business activity alone. Choose one or more values from the category "name" fields. If not explicitly and specifically given, use an empty array.
+- "subcategory": the specific roles within the chosen category/categories that this business has actually hired for, based on what the consultant said. Each value must belong to the "subs" list of a chosen category. This should almost always need at least one follow-up question.
+- "explanation": only used once every field that can reasonably be resolved has been resolved. Maximum two short sentences, plain Australian English, no jargon.
+- "question": if industry, category, or subcategory is still unresolved, ask exactly ONE short, specific, plain-English question that would give you what you need. If category or subcategory is missing, ask what specific roles or departments this business hires for. Ask about one thing at a time. Only set this to null once industry, category, and subcategory are all genuinely resolved.
+
+Respond with ONLY raw JSON, no markdown fences, no preamble, matching exactly this shape:
+{"industry": string|null, "category": string[], "subcategory": string[], "explanation": string|null, "question": string|null}`
+  }
+
+};
+
+const ENTITY_ORDER = ["contacts", "candidates", "jobs", "companies"];
+
+/* ===================== SIDEBAR NAV ===================== */
+
+function renderEntityNav() {
+  const nav = document.getElementById('entityNav');
+  nav.innerHTML = ENTITY_ORDER.map((id, i) =>
+    `<button class="sidebar-nav-btn ${i === 0 ? 'active' : ''}" data-entity-tab="${id}">${ENTITY_CONFIG[id].tabLabel}</button>`
+  ).join('');
+  nav.querySelectorAll('.sidebar-nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchEntityTab(btn.dataset.entityTab));
+  });
+}
+
+function switchEntityTab(entityId) {
+  ENTITY_ORDER.forEach(id => {
+    document.getElementById('panel-' + id).hidden = (id !== entityId);
+  });
+  document.querySelectorAll('#entityNav .sidebar-nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.entityTab === entityId);
+  });
+  renderSidebarGuide(entityId);
+}
+
+function renderSidebarGuide(entityId) {
+  const cfg = ENTITY_CONFIG[entityId];
+  const guide = document.getElementById('sidebarGuide');
+  guide.innerHTML = cfg.tips.map(t => `
+    <div class="sidebar-guide-item">
+      <div class="sg-label">${t.label}</div>
+      <div class="sg-text">${t.text}</div>
+    </div>
+  `).join('');
+}
+
+/* ===================== PER-ENTITY PANEL: BUILD + WIRE ===================== */
+
+function initEntity(entityId) {
+  const cfg = ENTITY_CONFIG[entityId];
+  const root = document.getElementById('panel-' + entityId);
+
+  const identityInputsHtml = cfg.identityFields.map(f => `
+    <div class="input-field">
+      <label>${f.label}</label>
+      <input data-role="identity" data-key="${f.key}" type="text" placeholder="${f.placeholder}">
+    </div>
+  `).join('');
+
+  root.innerHTML = `
+    <div class="journey">
+      <div class="rail-line"></div>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content card">
+          <div class="step-kicker">${cfg.step1.kicker}</div>
+          <div class="step-title">${cfg.step1.title}</div>
+          <div class="meaning-block">
+            <div class="meaning-label">What it means</div>
+            <div class="meaning-text">${cfg.step1.meaning}</div>
+          </div>
+          <div class="ask-block">
+            <div class="ask-label">Ask yourself</div>
+            <div class="ask-list">
+              ${cfg.step1.ask.map(q => `<div class="ask-item"><span class="qmark">?</span>${q}</div>`).join('')}
+            </div>
+          </div>
+          <p class="step-instruction">${cfg.step1.instruction}</p>
+          <div class="input-pair">${identityInputsHtml}</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content card">
+          <div class="step-kicker">Bullhorn field</div>
+          <div class="step-title">Industry</div>
+          <div class="meaning-block">
+            <div class="meaning-label">What it means</div>
+            <div class="meaning-text">${cfg.step2.meaning}</div>
+          </div>
+          <div class="ask-block">
+            <div class="ask-label">Ask yourself</div>
+            <div class="ask-list">
+              ${cfg.step2.ask.map(q => `<div class="ask-item"><span class="qmark">?</span>${q}</div>`).join('')}
+            </div>
+          </div>
+          <p class="step-instruction">${cfg.step2.instruction}</p>
+          <div class="tile-grid" data-role="industryGrid"></div>
+          <div class="select-note" data-role="industryNote" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content card">
+          <div class="step-kicker">Bullhorn field</div>
+          <div class="step-title">Category</div>
+          ${cfg.step3.callout ? `<div class="callout"><p>${cfg.step3.callout}</p></div>` : ''}
+          <div class="meaning-block">
+            <div class="meaning-label">What it means</div>
+            <div class="meaning-text">${cfg.step3.meaning}</div>
+          </div>
+          <div class="ask-block">
+            <div class="ask-label">Ask yourself</div>
+            <div class="ask-list">
+              ${cfg.step3.ask.map(q => `<div class="ask-item"><span class="qmark">?</span>${q}</div>`).join('')}
+            </div>
+          </div>
+          <p class="step-instruction">${cfg.step3.instruction}</p>
+          <div class="pick-grid" data-role="categoryPickGrid"></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content card">
+          <div class="step-kicker">Bullhorn field</div>
+          <div class="step-title">Subcategory</div>
+          <div class="meaning-block">
+            <div class="meaning-label">What it means</div>
+            <div class="meaning-text">${cfg.step4.meaning}</div>
+          </div>
+          <div class="ask-block">
+            <div class="ask-label">Ask yourself</div>
+            <div class="ask-list">
+              ${cfg.step4.ask.map(q => `<div class="ask-item"><span class="qmark">?</span>${q}</div>`).join('')}
+            </div>
+          </div>
+          <p class="step-instruction">${cfg.step4.instruction}</p>
+          <div data-role="subcategoryPicker"><div class="select-placeholder">Select a category in Step 3 first.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-block" data-role="resultsBlock">
+      <div class="results-title">${cfg.resultsTitle}</div>
+      ${cfg.identityFields.map(f => `
+        <div class="results-row">
+          <div class="results-label">${f.resultLabel}</div>
+          <div class="results-value" data-role="res-${f.key}"><span class="results-empty">Not entered yet</span></div>
+        </div>
+      `).join('')}
+      <div class="results-row">
+        <div class="results-label">Industry</div>
+        <div class="results-values" data-role="resIndustry"><span class="results-empty">Not selected yet</span></div>
+      </div>
+      <div class="results-row">
+        <div class="results-label">Category</div>
+        <div class="results-values" data-role="resCategory"><span class="results-empty">Not selected yet</span></div>
+      </div>
+      <div class="results-row">
+        <div class="results-label">Subcategory</div>
+        <div class="results-values" data-role="resSubcategory"><span class="results-empty">Not selected yet</span></div>
+      </div>
+    </div>
+
+    <div class="lookup-block" data-role="lookup">
+      <div class="lookup-title">${cfg.lookupTitle}</div>
+      <div class="lookup-sub">${cfg.lookupSub}</div>
+      <div class="ask-row">
+        <input data-role="askInput" type="text" placeholder="${cfg.lookupPlaceholder}">
+        <button data-role="askButton">Get categories</button>
+      </div>
+      <div class="ask-status" data-role="askStatus"></div>
+      <div data-role="aiResultWrap"></div>
+    </div>
+  `;
+
+  const state = {
+    identity: {},
+    industries: new Set(),
+    categories: new Set(),
+    subcategories: {}
+  };
+  cfg.identityFields.forEach(f => { state.identity[f.key] = ''; });
+
+  const els = {
+    industryGrid: root.querySelector('[data-role="industryGrid"]'),
+    industryNote: root.querySelector('[data-role="industryNote"]'),
+    categoryPickGrid: root.querySelector('[data-role="categoryPickGrid"]'),
+    subcategoryPicker: root.querySelector('[data-role="subcategoryPicker"]'),
+    askInput: root.querySelector('[data-role="askInput"]'),
+    askButton: root.querySelector('[data-role="askButton"]'),
+    askStatus: root.querySelector('[data-role="askStatus"]'),
+    aiResultWrap: root.querySelector('[data-role="aiResultWrap"]')
+  };
+
+  function updateResults() {
+    cfg.identityFields.forEach(f => {
+      const el = root.querySelector(`[data-role="res-${f.key}"]`);
+      el.innerHTML = state.identity[f.key] ? state.identity[f.key] : '<span class="results-empty">Not entered yet</span>';
+    });
+
+    const resIndustry = root.querySelector('[data-role="resIndustry"]');
+    resIndustry.innerHTML = state.industries.size
+      ? [...state.industries].map(i => `<span class="res-tag ind">${i}</span>`).join('')
+      : '<span class="results-empty">Not selected yet</span>';
+
+    const resCategory = root.querySelector('[data-role="resCategory"]');
+    resCategory.innerHTML = state.categories.size
+      ? [...state.categories].map(c => `<span class="res-tag cat">${c}</span>`).join('')
+      : '<span class="results-empty">Not selected yet</span>';
+
+    const allSubs = [];
+    Object.keys(state.subcategories).forEach(cat => {
+      state.subcategories[cat].forEach(s => allSubs.push(s));
+    });
+    const resSubcategory = root.querySelector('[data-role="resSubcategory"]');
+    resSubcategory.innerHTML = allSubs.length
+      ? allSubs.map(s => `<span class="res-tag sub">${s}</span>`).join('')
+      : '<span class="results-empty">Not selected yet</span>';
+  }
+
+  root.querySelectorAll('input[data-role="identity"]').forEach(inputEl => {
+    inputEl.addEventListener('input', e => {
+      state.identity[inputEl.dataset.key] = e.target.value.trim();
+      updateResults();
+    });
+  });
+
+  function refreshIndustryNote() {
+    if (state.industries.size > 1) {
+      els.industryNote.style.display = 'block';
+      els.industryNote.textContent = `${state.industries.size} industries selected. Best practice is one, only keep more than one if you genuinely can't pick a single best match.`;
+    } else {
+      els.industryNote.style.display = 'none';
+    }
+  }
+
+  function toggleIndustry(chipEl, value) {
+    if (state.industries.has(value)) {
+      state.industries.delete(value);
+      chipEl.classList.remove('picked');
+    } else {
+      state.industries.add(value);
+      chipEl.classList.add('picked');
+    }
+    refreshIndustryNote();
+    updateResults();
+  }
+
+  industryData.forEach(g => {
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+
+    let count = g.items ? g.items.length : 0;
+    if (g.subgroups) g.subgroups.forEach(sg => count += sg.items.length);
+
+    tile.innerHTML = `<div class="tile-name">${g.group}</div><div class="tile-count">${count} options</div>`;
+
+    const panel = document.createElement('div');
+    panel.className = 'expand-panel';
+    let bodyHtml = '';
+    if (g.subgroups) {
+      g.subgroups.forEach(sg => {
+        bodyHtml += `<div class="sub-block"><div class="sub-block-title">${sg.title}</div><div class="chip-row">${sg.items.map(i=>`<span class="chip selectable" data-value="${i}">${i}</span>`).join('')}</div></div>`;
+      });
+      if (g.items && g.items.length) {
+        bodyHtml += `<div class="sub-block"><div class="sub-block-title">General</div><div class="chip-row">${g.items.map(i=>`<span class="chip selectable" data-value="${i}">${i}</span>`).join('')}</div></div>`;
+      }
+    } else {
+      bodyHtml = `<div class="chip-row">${g.items.map(i=>`<span class="chip selectable" data-value="${i}">${i}</span>`).join('')}</div>`;
+    }
+    panel.innerHTML = `<div class="expand-panel-inner">${bodyHtml}</div>`;
+
+    tile.addEventListener('click', () => {
+      const isOpen = tile.classList.contains('open');
+      if (!isOpen) {
+        tile.classList.add('open');
+        panel.style.maxHeight = panel.scrollHeight + 20 + 'px';
+      } else {
+        tile.classList.remove('open');
+        panel.style.maxHeight = null;
+      }
+    });
+
+    panel.querySelectorAll('.chip.selectable').forEach(chip => {
+      chip.addEventListener('click', e => {
+        e.stopPropagation();
+        toggleIndustry(chip, chip.dataset.value);
+      });
+    });
+
+    els.industryGrid.appendChild(tile);
+    els.industryGrid.appendChild(panel);
+  });
+
+  function toggleCategory(tileEl, catName) {
+    if (state.categories.has(catName)) {
+      state.categories.delete(catName);
+      delete state.subcategories[catName];
+      tileEl.classList.remove('picked');
+    } else {
+      state.categories.add(catName);
+      state.subcategories[catName] = new Set();
+      tileEl.classList.add('picked');
+    }
+    renderSubcategoryPicker();
+    updateResults();
+  }
+
+  categoryData.forEach(cat => {
+    const tile = document.createElement('div');
+    tile.className = 'pick-tile';
+    tile.innerHTML = `<div class="check-dot"></div><div class="tile-name">${cat.name}</div><div class="tile-desc">${cat.desc}</div>`;
+    tile.addEventListener('click', () => toggleCategory(tile, cat.name));
+    els.categoryPickGrid.appendChild(tile);
+  });
+
+  function toggleSubcategory(itemEl, catName, sub, countEl) {
+    const set = state.subcategories[catName];
+    if (set.has(sub)) {
+      set.delete(sub);
+      itemEl.classList.remove('picked');
+    } else {
+      set.add(sub);
+      itemEl.classList.add('picked');
+    }
+    countEl.textContent = `${set.size} selected`;
+    updateResults();
+  }
+
+  function renderSubcategoryPicker() {
+    els.subcategoryPicker.innerHTML = '';
+
+    if (state.categories.size === 0) {
+      els.subcategoryPicker.innerHTML = '<div class="select-placeholder">Select a category in Step 3 first.</div>';
+      return;
+    }
+
+    categoryData.filter(c => state.categories.has(c.name)).forEach(cat => {
+      const selectedSubs = state.subcategories[cat.name] || new Set();
+
+      const block = document.createElement('div');
+      block.className = 'sub-picker-block';
+
+      const dropdown = document.createElement('div');
+      dropdown.className = 'sub-dropdown';
+      dropdown.innerHTML = `
+        <div class="sub-dropdown-head">
+          <span class="sub-dropdown-title">${cat.name}</span>
+          <div class="sub-dropdown-meta">
+            <span class="sub-dropdown-count">${selectedSubs.size} selected</span>
+            <svg class="sub-dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="sub-dropdown-panel">
+          <div class="sub-dropdown-panel-inner">
+            ${cat.subs.map(s => `<div class="sub-pick-item ${selectedSubs.has(s) ? 'picked' : ''}" data-sub="${s}"><span class="check-box"></span>${s}</div>`).join('')}
+          </div>
+        </div>
+      `;
+
+      const head = dropdown.querySelector('.sub-dropdown-head');
+      const panel = dropdown.querySelector('.sub-dropdown-panel');
+      const countEl = dropdown.querySelector('.sub-dropdown-count');
+
+      head.addEventListener('click', () => {
+        const isOpen = dropdown.classList.contains('open');
+        if (!isOpen) {
+          dropdown.classList.add('open');
+          panel.style.maxHeight = panel.scrollHeight + 10 + 'px';
+        } else {
+          dropdown.classList.remove('open');
+          panel.style.maxHeight = null;
+        }
+      });
+
+      dropdown.querySelectorAll('.sub-pick-item').forEach(item => {
+        item.addEventListener('click', () => {
+          toggleSubcategory(item, cat.name, item.dataset.sub, countEl);
+          panel.style.maxHeight = panel.scrollHeight + 10 + 'px';
+        });
+      });
+
+      block.appendChild(dropdown);
+      els.subcategoryPicker.appendChild(block);
+    });
+  }
+
+  renderSubcategoryPicker();
+  updateResults();
+
+  /* ---- AI lookup, scoped to this entity ---- */
+
+  let conversationHistory = [];
+  const systemPrompt = cfg.systemPromptTemplate.replace('__TAXONOMY_JSON__', TAXONOMY_JSON);
+
+  async function runLookup(overrideQuery) {
+    const query = (overrideQuery !== undefined ? overrideQuery : els.askInput.value).trim();
+    if (!query) return;
+
+    els.askButton.disabled = true;
+    els.askStatus.textContent = 'Working it out…';
+
+    conversationHistory.push({ role: 'user', content: query });
+    els.askInput.value = '';
+
+    try {
+      const response = await fetch(FLOW_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          entityType: entityId,
+          systemPrompt: systemPrompt,
+          conversation: conversationHistory
+        })
+      });
+
+      if (!response.ok) throw new Error('Flow returned ' + response.status);
+
+      const data = await response.json();
+      const replyText = data.reply;
+      if (!replyText) throw new Error('No response received.');
+
+      conversationHistory.push({ role: 'assistant', content: replyText });
+
+      const cleaned = replyText.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(cleaned);
+
+      renderAiResult(parsed);
+      els.askStatus.textContent = '';
+    } catch (err) {
+      console.error('Lookup error (' + entityId + '):', err);
+      els.askStatus.textContent = '';
+      els.aiResultWrap.innerHTML = `<div class="ai-result"><div class="ai-error">Something went wrong getting a suggestion. Try rephrasing, or use the step-by-step guide above.</div></div>`;
+    } finally {
+      els.askButton.disabled = false;
+      els.askInput.focus();
+    }
+  }
+
+  function tagOrUnknown(list, cls, emptyLabel) {
+    if (!list || (Array.isArray(list) && list.length === 0) || list === null) {
+      return `<span class="ai-tag unknown">${emptyLabel}</span>`;
+    }
+    const values = Array.isArray(list) ? list : [list];
+    return values.map(v => `<span class="ai-tag ${cls}">${v}</span>`).join('');
+  }
+
+  function renderAiResult(result) {
+    const hasQuestion = !!result.question;
+    const html = `
+      <div class="ai-result">
+        <div class="ai-result-row">
+          <div class="ai-result-label">Industry</div>
+          <div class="ai-result-values">${tagOrUnknown(result.industry, 'ind', 'Not yet')}</div>
+        </div>
+        <div class="ai-result-row">
+          <div class="ai-result-label">Category</div>
+          <div class="ai-result-values">${tagOrUnknown(result.category, 'cat', 'Not yet')}</div>
+        </div>
+        <div class="ai-result-row">
+          <div class="ai-result-label">Subcategory</div>
+          <div class="ai-result-values">${tagOrUnknown(result.subcategory, 'sub', 'Not yet')}</div>
+        </div>
+        ${hasQuestion ? `
+          <div class="ai-question">
+            <div class="ai-question-label">To narrow this down</div>
+            <div class="ai-question-text">${result.question}</div>
+            <div class="ai-answer-row">
+              <input data-role="inlineAnswerInput" type="text" placeholder="Type your answer here…">
+              <button data-role="inlineAnswerBtn">Send</button>
+            </div>
+          </div>
+        ` : ''}
+        ${result.explanation ? `<div class="ai-explanation">${result.explanation}</div>` : ''}
+        ${conversationHistory.length > 0 ? `<div class="ai-restart" data-role="aiRestart">Start a new search</div>` : ''}
+      </div>
+    `;
+    els.aiResultWrap.innerHTML = html;
+
+    if (hasQuestion) {
+      els.askInput.placeholder = 'Type your answer here…';
+
+      const inlineInput = els.aiResultWrap.querySelector('[data-role="inlineAnswerInput"]');
+      const inlineBtn = els.aiResultWrap.querySelector('[data-role="inlineAnswerBtn"]');
+
+      const submitInline = () => {
+        const val = inlineInput.value.trim();
+        if (!val) return;
+        inlineInput.disabled = true;
+        inlineBtn.disabled = true;
+        runLookup(val);
+      };
+
+      inlineBtn.addEventListener('click', submitInline);
+      inlineInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitInline(); });
+      inlineInput.focus();
+    }
+
+    const restartLink = els.aiResultWrap.querySelector('[data-role="aiRestart"]');
+    if (restartLink) {
+      restartLink.addEventListener('click', () => {
+        conversationHistory = [];
+        els.aiResultWrap.innerHTML = '';
+        els.askInput.value = '';
+        els.askInput.placeholder = cfg.lookupPlaceholder;
+        els.askInput.focus();
+      });
+    }
+  }
+
+  els.askButton.addEventListener('click', () => runLookup());
+  els.askInput.addEventListener('keydown', e => { if (e.key === 'Enter') runLookup(); });
+}
+
+/* ===================== BOOT ===================== */
+
+renderEntityNav();
+renderSidebarGuide(ENTITY_ORDER[0]);
+ENTITY_ORDER.forEach(id => initEntity(id));
+</script>
+
+</body>
+</html>
