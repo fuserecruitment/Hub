@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fuse Hub</title>
+<link rel="icon" type="image/png" href="fuse-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --navy:#151A36;
+    --blue:#009CDD;
+    --concrete:#A2C8D8;
+    --steel:#E6EFF3;
+    --line:#CBD9E1;
+    --warn:#B23B3B;
+    --white:#FFFFFF;
+    --ink:#151A36;
+    --ink-soft:#5B6178;
+    --radius-lg:10px;
+    --radius-md:8px;
+    --radius-sm:7px;
+    --sidebar-w:300px;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--steel);
+    color:var(--ink);
+    font-family:'Work Sans',sans-serif;
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{margin:0;color:var(--navy);font-weight:700;letter-spacing:-0.01em;}
+  p{margin:0;}
+  [hidden]{display:none !important;}
+
+  /* ---------- Email gate ---------- */
+  .gate{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:var(--navy);padding:24px 16px;
+  }
+  .gate-card{
+    width:100%;max-width:400px;text-align:center;color:#fff;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+    border-radius:var(--radius-lg);padding:36px 28px 30px;
+  }
+  .gate-card img{display:block;width:110px;height:auto;margin:0 auto 20px;}
+  .gate-card h1{color:#fff;font-size:24px;margin-bottom:6px;}
+  .gate-card p{color:rgba(255,255,255,.65);font-size:14px;margin-bottom:24px;}
+  .gate-card label{
+    display:block;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.06em;color:rgba(255,255,255,.5);margin-bottom:8px;
+  }
+  .gate-card input{
+    width:100%;padding:11px 12px;border-radius:var(--radius-sm);
+    border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;
+    font-family:'Work Sans',sans-serif;font-size:15px;
+  }
+  .gate-card input::placeholder{color:rgba(255,255,255,.35);}
+  .gate-card input:focus{outline:none;border-color:var(--blue);}
+  .gate-error{min-height:20px;margin-top:8px;text-align:left;font-size:12.5px;color:#FF9B9B;}
+  .gate-card button{
+    width:100%;margin-top:8px;padding:11px 12px;border:none;border-radius:var(--radius-sm);
+    background:var(--blue);color:#fff;font-family:'Work Sans',sans-serif;font-size:14.5px;font-weight:600;cursor:pointer;
+  }
+  .gate-card button:hover{background:#1AAEEC;}
+
+  /* ---------- Shell: sidebar + workspace (same component as Top Talent Planner) ---------- */
+  .shell{display:flex;min-height:100vh;}
+
+  .sidebar{
+    width:var(--sidebar-w);flex-shrink:0;
+    background:var(--navy);color:var(--white);
+    display:flex;flex-direction:column;
+    height:100vh;position:sticky;top:0;overflow:hidden;
+  }
+  .sidebar-scroll{flex:1;min-height:0;overflow-y:auto;}
+  .sidebar-brand{
+    padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1);text-align:center;
+  }
+  .sidebar-logo{display:block;width:96px;height:auto;margin:0 auto 14px;}
+  .sidebar-brand h1{font-size:16.5px;margin:0;color:#fff;}
+  .sidebar-brand .tag{font-size:11px;color:rgba(255,255,255,.55);margin-top:3px;}
+
+  .sidebar-block{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.08);}
+  .sidebar-block label{
+    display:block;font-size:10.5px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.06em;color:rgba(255,255,255,.5);margin-bottom:8px;
+  }
+  .sidebar-nav-btn{
+    display:block;width:100%;text-align:left;padding:10px 12px;margin-bottom:4px;border-radius:7px;border:none;
+    background:rgba(255,255,255,.06);color:rgba(255,255,255,.8);font-family:'Work Sans',sans-serif;
+    font-size:13.5px;font-weight:600;cursor:pointer;text-decoration:none;
+  }
+  .sidebar-nav-btn:hover{background:rgba(255,255,255,.12);color:#fff;}
+  .sidebar-nav-btn.active{background:var(--blue);color:#fff;}
+
+  .sidebar-user{padding:14px 20px 18px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:rgba(255,255,255,.55);}
+  .sidebar-user strong{display:block;color:#fff;font-weight:600;font-size:12.5px;word-break:break-all;margin:2px 0 6px;}
+  .sidebar-user button{
+    padding:0;border:none;background:none;color:var(--concrete);font-family:'Work Sans',sans-serif;
+    font-size:12px;cursor:pointer;text-decoration:underline;
+  }
+
+  .workspace{flex:1;min-width:0;padding:32px 36px 80px;}
+  .workspace-inner{max-width:900px;margin:0 auto;}
+
+  /* ---------- Home ---------- */
+  .intro{padding-bottom:28px;}
+  .intro h1{font-size:28px;line-height:1.25;margin:0 0 10px;}
+  .intro p{color:var(--ink-soft);font-size:15px;}
+
+  .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+  .tool-card{
+    display:flex;flex-direction:column;background:var(--white);border:1px solid var(--line);
+    border-radius:var(--radius-lg);padding:20px 20px 18px;text-decoration:none;color:var(--ink);
+    transition:border-color .15s,box-shadow .15s;
+  }
+  .tool-card:hover{border-color:var(--blue);box-shadow:0 6px 18px rgba(21,26,54,.08);}
+  .tool-card:focus-visible{outline:3px solid var(--blue);outline-offset:2px;}
+  .tool-tag{
+    align-self:flex-start;font-size:11px;font-weight:600;border-radius:100px;padding:3px 10px;
+    background:var(--steel);color:var(--ink-soft);margin-bottom:12px;
+  }
+  .tool-card h3{font-size:17px;margin-bottom:6px;}
+  .tool-card p{color:var(--ink-soft);font-size:14px;flex:1;}
+  .tool-open{margin-top:16px;font-size:13.5px;font-weight:600;color:var(--blue);}
+
+  footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-soft);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+
+  @media(max-width:860px){
+    .shell{flex-direction:column;}
+    .sidebar{width:100%;height:auto;position:relative;}
+    .workspace{padding:24px 16px 60px;}
+    .intro h1{font-size:24px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Sign-in: Fuse email only, no password. This is a soft gate, not security. -->
+<div class="gate" id="gate" hidden>
+  <form class="gate-card" id="gateForm" novalidate>
+    <img src="fuse-logo.png" alt="Fuse">
+    <h1>Fuse Hub</h1>
+    <p>Internal tools for the Fuse team. Enter your Fuse email to continue.</p>
+    <label for="gateEmail">Work email</label>
+    <input type="email" id="gateEmail" autocomplete="email" placeholder="you@fuserecruitment.com" required>
+    <div class="gate-error" id="gateError" role="alert"></div>
+    <button type="submit">Continue</button>
+  </form>
+</div>
+
+<div class="shell" id="app" hidden>
+  <aside class="sidebar">
+    <div class="sidebar-scroll">
+      <div class="sidebar-brand">
+        <img src="fuse-logo.png" alt="Fuse" class="sidebar-logo">
+        <h1>Fuse Hub</h1>
+        <div class="tag">Internal tools</div>
+      </div>
+
+      <div class="sidebar-block">
+        <label>Menu</label>
+        <a class="sidebar-nav-btn active" href="./">Home</a>
+      </div>
+
+      <div class="sidebar-block">
+        <label>Tools</label>
+        <nav id="toolNav"></nav>
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      Signed in as
+      <strong id="userEmail"></strong>
+      <button type="button" id="signOut">Not you? Sign out</button>
+    </div>
+  </aside>
+
+  <main class="workspace">
+    <div class="workspace-inner">
+      <div class="intro">
+        <h1>Everything in one place.</h1>
+        <p>Pick a tool from the sidebar or below. Each tool has a link back to Fuse Hub.</p>
+      </div>
+
+      <div class="tool-grid" id="toolGrid"></div>
+
+      <footer>
+        <span>Fuse Recruitment</span>
+        <span>Internal use</span>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ===================== TOOLS ===================== */
+/* To add a tool to the hub, add an entry here. It appears in the sidebar
+   and as a card on the home page. */
+const TOOLS = [
+  {
+    name: 'Bullhorn Categorisation',
+    tag: 'Bullhorn',
+    description: 'Work out the industry, category and subcategory for contacts, candidates, jobs and companies.',
+    url: 'https://fuserecruitment.github.io/bullhorn-category/'
+  },
+  {
+    name: 'Present Feedback Review',
+    tag: 'Report',
+    description: 'Findings from the September 2026 survey of 39 consultants and resourcers on building profiles in Present.',
+    url: 'present-feedback/'
+  }
+];
+
+/* ===================== SIGN-IN ===================== */
+/* Shared with the tool pages: they read the same key on the same
+   fuserecruitment.github.io origin and send people here if it's missing. */
+const EMAIL_KEY = 'fuseHub.email';
+const EMAIL_PATTERN = /^[^\s@]+@fuserecruitment\.com$/i;
+
+function readEmail() {
+  try { return localStorage.getItem(EMAIL_KEY); } catch { return null; }
+}
+function writeEmail(email) {
+  try { localStorage.setItem(EMAIL_KEY, email); } catch {}
+}
+function clearEmail() {
+  try { localStorage.removeItem(EMAIL_KEY); } catch {}
+}
+
+/* Only follow ?next= back to our own pages, never to another site. */
+function safeNext() {
+  const next = new URLSearchParams(location.search).get('next');
+  if (!next) return null;
+  try {
+    const url = new URL(next, location.href);
+    const ours = url.origin === location.origin || url.origin === 'https://fuserecruitment.github.io';
+    return ours ? url.href : null;
+  } catch { return null; }
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+function showApp(email) {
+  document.getElementById('gate').hidden = true;
+  document.getElementById('app').hidden = false;
+  document.getElementById('userEmail').textContent = email;
+
+  document.getElementById('toolNav').innerHTML = TOOLS.map(t =>
+    `<a class="sidebar-nav-btn" href="${t.url}">${escapeHtml(t.name)}</a>`
+  ).join('');
+
+  document.getElementById('toolGrid').innerHTML = TOOLS.map(t => `
+    <a class="tool-card" href="${t.url}">
+      <span class="tool-tag">${escapeHtml(t.tag)}</span>
+      <h3>${escapeHtml(t.name)}</h3>
+      <p>${escapeHtml(t.description)}</p>
+      <span class="tool-open">Open &rarr;</span>
+    </a>`
+  ).join('');
+}
+
+function showGate() {
+  document.getElementById('app').hidden = true;
+  document.getElementById('gate').hidden = false;
+  document.getElementById('gateEmail').focus();
+}
+
+document.getElementById('gateForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const email = document.getElementById('gateEmail').value.trim().toLowerCase();
+  const error = document.getElementById('gateError');
+  if (!EMAIL_PATTERN.test(email)) {
+    error.textContent = 'Please use your @fuserecruitment.com email.';
+    return;
+  }
+  error.textContent = '';
+  writeEmail(email);
+  const next = safeNext();
+  if (next) { location.href = next; return; }
+  showApp(email);
+});
+
+document.getElementById('signOut').addEventListener('click', () => {
+  clearEmail();
+  document.getElementById('gateEmail').value = '';
+  showGate();
+});
+
+const saved = readEmail();
+if (saved && EMAIL_PATTERN.test(saved)) {
+  const next = safeNext();
+  if (next) location.replace(next); else showApp(saved);
+} else {
+  showGate();
+}
+</script>
+</body>
+</html>

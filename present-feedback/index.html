@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Present feedback review | Fuse Recruitment</title>
+<script>
+/* Fuse Hub sign-in check: send people to the hub to enter their Fuse email first. */
+(function () {
+  var email = null;
+  try { email = localStorage.getItem('fuseHub.email'); } catch (e) { return; }
+  if (!email || !/^[^\s@]+@fuserecruitment\.com$/i.test(email)) {
+    location.replace('../?next=' + encodeURIComponent(location.href));
+  }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#151A36; --blue:#009CDD; --concrete:#A2C8D8; --steel:#E6EFF3;
+  --bg:#F7FAFC; --surface:#FFFFFF; --ink:#151A36; --muted:#56607A; --line:#D5E3EA;
+  --soft:#E6EFF3; --bar:#A2C8D8; --accent:#009CDD; --hero-bg:#151A36; --hero-ink:#FFFFFF;
+  --paper:#FFFFFF; --paper-line:#D9E6EC;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1328; --surface:#1A2042; --ink:#E9F1F5; --muted:#A7B6C6; --line:#2C3563;
+    --soft:#222A52; --bar:#4F7488; --accent:#2BB3EC; --hero-bg:#0A0D1F; --hero-ink:#FFFFFF;
+    --paper:#EEF4F7; --paper-line:#C9DAE2;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1328; --surface:#1A2042; --ink:#E9F1F5; --muted:#A7B6C6; --line:#2C3563;
+  --soft:#222A52; --bar:#4F7488; --accent:#2BB3EC; --hero-bg:#0A0D1F; --hero-ink:#FFFFFF;
+  --paper:#EEF4F7; --paper-line:#C9DAE2;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Work Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-weight:600;line-height:1.15;margin:0}
+h2{font-size:clamp(26px,3.4vw,36px);letter-spacing:-0.01em}
+h3{font-size:19px}
+p{margin:0}
+.lede{color:var(--muted);max-width:60ch;margin-top:10px}
+section{padding:72px 0}
+section.alt{background:var(--soft)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+
+/* Top bar */
+.topbar{background:var(--hero-bg);color:var(--hero-ink)}
+.topbar .wrap{display:flex;justify-content:space-between;align-items:center;padding-top:18px;padding-bottom:18px;font-size:14px}
+.topbar .meta{opacity:.75}
+.topbar .hub-link{color:inherit;font-weight:600;text-decoration:none}
+.topbar .hub-link:hover{text-decoration:underline}
+.topbar .hub-sep{margin:0 10px;opacity:.5}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.01em}
+.brand svg{width:26px;height:26px}
+
+/* Hero */
+.hero{background:var(--hero-bg);color:var(--hero-ink);padding:40px 0 88px}
+.hero .wrap{display:block}
+.hero .wrap > div{max-width:760px}
+.hero h1{font-size:clamp(34px,5vw,56px);font-weight:300;letter-spacing:-0.02em}
+.hero h1 span{display:block;font-weight:600}
+.hero p{color:#C7D6E4;margin-top:20px;max-width:46ch}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:36px;max-width:720px}
+.hero-stats div{border:1px solid rgba(162,200,216,.35);border-radius:14px;padding:12px 14px}
+@media (max-width:560px){.hero-stats{grid-template-columns:1fr 1fr}}
+.hero-stats strong{display:block;font-size:24px;font-weight:600;color:#fff}
+.hero-stats small{color:#A2C8D8;font-size:13px}
+
+/* Profile mock */
+.mock{position:relative}
+.paper{background:var(--paper);border-radius:18px;padding:26px 26px 30px;color:#151A36;box-shadow:0 30px 60px rgba(0,0,0,.35)}
+.paper .phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.paper .pname{height:12px;width:44%;background:#151A36;border-radius:6px}
+.paper .plogo{width:22px;height:22px}
+.ptable{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:18px}
+.ptable i{display:block;height:22px;border-radius:6px;background:#E6EFF3;border:1px dashed #A2C8D8}
+.pblock{margin-bottom:16px}
+.pblock b{display:block;height:9px;width:34%;background:#009CDD;border-radius:5px;margin-bottom:9px}
+.pblock i{display:block;height:7px;background:var(--paper-line);border-radius:4px;margin-bottom:6px}
+.pblock i:nth-child(3){width:92%}.pblock i:nth-child(4){width:80%}.pblock i:nth-child(5){width:64%}
+.pblock.odd i:nth-child(3){height:12px;width:70%;background:#C9DAE2}
+.pin{position:absolute;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-weight:600;font-size:14px;display:grid;place-items:center;border:3px solid var(--hero-bg);cursor:pointer;transition:transform .2s}
+.pin:hover,.pin.on{transform:scale(1.15);background:#fff;color:var(--navy)}
+.pins-legend{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:8px}
+.pins-legend li{display:flex;gap:12px;align-items:baseline;font-size:15px;color:#C7D6E4;padding:6px 10px;border-radius:10px;transition:background .2s}
+.pins-legend li.on{background:rgba(0,156,221,.18);color:#fff}
+.pins-legend span{flex:0 0 22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;font-weight:600;display:grid;place-items:center}
+
+/* Stat grid */
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px}
+.card h3{margin-bottom:4px}
+.card .sub{color:var(--muted);font-size:14px;margin-bottom:18px}
+.mt{margin-top:32px}
+
+/* Stacked bar */
+.stack{display:flex;height:46px;border-radius:12px;overflow:hidden;margin:6px 0 16px}
+.stack div{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:15px}
+.key{display:flex;flex-wrap:wrap;gap:10px 22px;font-size:14px;color:var(--muted)}
+.key span{display:inline-flex;align-items:center;gap:8px}
+.key i{width:12px;height:12px;border-radius:4px;display:inline-block}
+
+/* Column chart */
+.cols{display:flex;align-items:flex-end;gap:14px;height:170px;padding-top:10px;border-bottom:1px solid var(--line)}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.col .v{font-weight:600;font-size:15px;margin-bottom:6px}
+.col .b{width:100%;max-width:64px;background:var(--bar);border-radius:10px 10px 4px 4px}
+.col .b.hi{background:var(--accent)}
+.col-labels{display:flex;gap:14px;margin-top:8px}
+.col-labels span{flex:1;text-align:center;font-size:13px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin-top:14px}
+
+/* Horizontal bars */
+.hbars{display:grid;gap:14px}
+.hbar{display:grid;grid-template-columns:150px 1fr 34px;gap:12px;align-items:center;font-size:15px}
+.hbar .track{height:14px;background:var(--soft);border-radius:8px;overflow:hidden}
+.hbar .fill{height:100%;background:var(--accent);border-radius:8px}
+.hbar .fill.b2{background:var(--bar)}
+.hbar em{font-style:normal;font-weight:600;text-align:right}
+
+/* Role split */
+.split{display:grid;gap:18px}
+.split .row{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;font-size:15px}
+.split .stack{margin:0;height:34px;border-radius:10px}
+.split .stack div{font-size:13px}
+
+/* Themes */
+.themes{display:grid;gap:14px}
+.theme{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;display:grid;grid-template-columns:64px 1fr 1.1fr;gap:22px;align-items:center}
+.theme .n{font-size:34px;font-weight:600;color:var(--accent);line-height:1}
+.theme .n small{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:4px}
+.theme p{color:var(--muted);font-size:15px;margin-top:4px}
+.theme blockquote{margin:0;padding:12px 16px;border-left:3px solid var(--concrete);background:var(--soft);border-radius:0 12px 12px 0;font-size:15px;font-style:italic;color:var(--ink)}
+.divided{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.divided .card{position:relative}
+.divided .card .tag{display:inline-block;font-size:13px;padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--muted);margin-bottom:12px}
+
+/* Asks */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chips span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:14px}
+
+/* Tabs and recs */
+.tabs{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:5px;gap:4px;margin:28px 0 20px}
+.tabs button{font:inherit;font-size:15px;font-weight:500;border:0;background:transparent;color:var(--muted);padding:10px 18px;border-radius:10px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--navy);color:#fff}
+:root[data-theme="dark"] .tabs button[aria-selected="true"]{background:var(--accent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tabs button[aria-selected="true"]{background:var(--accent)}}
+.filter{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;font-size:14px;color:var(--muted);align-items:center}
+.filter button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer}
+.filter button.on{border-color:var(--accent);color:var(--accent)}
+.recs{display:grid;gap:10px}
+details.rec{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+details.rec summary{list-style:none;cursor:pointer;padding:18px 22px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}
+details.rec summary::-webkit-details-marker{display:none}
+details.rec summary h3{font-size:17px;font-weight:500}
+details.rec .tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.t{font-size:12px;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.t.high{background:var(--navy);color:#fff}
+.t.med{background:var(--concrete);color:var(--navy)}
+.t.low{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.t.eff{background:transparent;border:1px solid var(--line);color:var(--muted)}
+:root[data-theme="dark"] .t.high{background:var(--accent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .t.high{background:var(--accent)}}
+details.rec .body{padding:0 22px 20px;color:var(--muted);font-size:15px;display:grid;gap:8px;max-width:78ch}
+details.rec .body .why{font-size:13px}
+details.rec summary .chev{display:none}
+.panel[hidden]{display:none}
+
+/* Roadmap */
+.road{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:32px}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;position:relative}
+.stage .when{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.stage .when b{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:15px}
+.stage.s2 .when b{background:var(--concrete);color:var(--navy)}
+.stage.s3 .when b{background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+.stage .when small{display:block;color:var(--muted);font-size:13px}
+.stage ul{margin:0;padding:0;list-style:none;display:grid;gap:10px;font-size:15px}
+.stage li{padding-left:18px;position:relative}
+.stage li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;border-radius:50%;background:var(--concrete)}
+.stage li.tr::before{background:var(--accent)}
+.legend-mini{display:flex;gap:18px;font-size:13px;color:var(--muted);margin-top:14px}
+.legend-mini span{display:inline-flex;align-items:center;gap:8px}
+.legend-mini i{width:8px;height:8px;border-radius:50%;display:inline-block}
+
+
+
+/* Outside Present */
+.subhead{margin-top:56px;font-size:22px}
+.hbar.wide{grid-template-columns:220px 1fr 30px}
+.ratio h3{font-size:30px;font-weight:600;color:var(--accent)}
+.dots{display:grid;grid-template-columns:repeat(13,1fr);gap:6px;margin-top:4px}
+.dots i{aspect-ratio:1;border-radius:50%;background:var(--soft);border:1px solid var(--line)}
+.dots i.on{background:var(--accent);border-color:var(--accent)}
+.meter{height:14px;background:var(--soft);border-radius:8px;overflow:hidden}
+.meter div{height:100%;background:var(--accent);border-radius:8px}
+.why strong{display:block;font-size:30px;font-weight:600;color:var(--accent);line-height:1;margin-bottom:10px}
+.why p{color:var(--muted);font-size:15px;margin-top:6px}
+.flow{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:22px;counter-reset:f}
+.flow li{position:relative;background:var(--soft);border-radius:12px;padding:10px 14px;font-size:15px}
+.flow li+li::before{content:"";position:absolute;left:22px;top:-17px;width:10px;height:10px;border-right:2px solid var(--concrete);border-bottom:2px solid var(--concrete);transform:rotate(45deg)}
+.flow li.ext{background:var(--accent);color:#fff}
+.flow li.pain{background:transparent;border:1.5px dashed var(--accent)}
+.cmp{display:grid;gap:8px;margin-bottom:18px;font-size:15px}
+.cmp .stack{margin:0;height:34px;border-radius:10px}
+.cmp .stack div{font-size:13px}
+ul.plain{margin:0;padding-left:18px;display:grid;gap:10px;color:var(--muted);font-size:15px}
+@media (max-width:560px){.hbar.wide{grid-template-columns:130px 1fr 26px}}
+
+/* Voices */
+.voices{background:var(--hero-bg);color:var(--hero-ink)}
+.voices .lede{color:#C7D6E4}
+.qfilter{display:flex;flex-wrap:wrap;gap:8px;margin:28px 0 24px}
+.qfilter button{font:inherit;font-size:14px;border:1px solid rgba(162,200,216,.4);background:transparent;color:#E6EFF3;padding:7px 14px;border-radius:999px;cursor:pointer}
+.qfilter button.on{background:#009CDD;border-color:#009CDD;color:#fff}
+.qgrid{columns:3 300px;column-gap:18px}
+.q{break-inside:avoid;margin:0 0 18px;background:rgba(230,239,243,.06);border:1px solid rgba(162,200,216,.22);border-radius:16px;padding:20px 22px}
+.q[hidden]{display:none}
+.q .qt{display:inline-block;font-size:12px;color:#A2C8D8;margin-bottom:10px}
+.q blockquote{margin:0;font-size:17px;line-height:1.5;font-weight:400;color:#fff}
+.q blockquote::before{content:"\201C";display:block;font-size:40px;line-height:.6;color:#009CDD;margin-bottom:8px;font-weight:600}
+.q figcaption{margin-top:12px;font-size:13px;color:#A2C8D8}
+.q[data-t="pos"]{border-color:rgba(0,156,221,.55)}
+
+footer{background:var(--hero-bg);color:#A2C8D8;padding:36px 0;font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+@media (max-width:900px){
+  .hero .wrap,.g2,.g3,.divided,.road{grid-template-columns:1fr}
+  .theme{grid-template-columns:52px 1fr}
+  .theme blockquote{grid-column:1 / -1}
+  .hero{padding-bottom:64px}
+  section{padding:56px 0}
+}
+@media (max-width:560px){
+  body{font-size:16px}
+  .wrap{padding:0 18px}
+  .hbar{grid-template-columns:110px 1fr 28px;font-size:14px}
+  details.rec summary{grid-template-columns:1fr}
+  details.rec .tags{justify-content:flex-start}
+  .split .row{grid-template-columns:1fr}
+  .tabs{display:flex}
+  .tabs button{flex:1;padding:10px 8px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="meta"><a class="hub-link" href="../">&larr; Fuse Hub</a><span class="hub-sep">|</span>Internal review, September 2026</span>
+    <span class="brand">Fuse Recruitment
+    </span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Present feedback review <span>Where the profile breaks</span></h1>
+      <p>39 consultants and resourcers told us how they build candidate profiles today. Present is widely used and valued. Getting profiles client-ready still takes workarounds.</p>
+      <div class="hero-stats">
+        <div><strong>3.7 / 5</strong><small>Average rating</small></div>
+        <div><strong>74%</strong><small>Rate it efficient</small></div>
+        <div><strong>46%</strong><small>Use Present alone</small></div>
+        <div><strong>54%</strong><small>Also use AI tools</small></div>
+      </div>
+    </div>
+
+    
+  </div>
+</header>
+
+<main>
+
+<section>
+  <div class="wrap">
+    <h2>Who responded</h2>
+    <p class="lede">A high-frequency workflow. Most respondents build profiles every day.</p>
+    <div class="grid g3 mt">
+      <div class="card">
+        <h3>By role</h3>
+        <p class="sub">39 responses</p>
+        <div class="hbars">
+          <div class="hbar"><span>Consultants+</span><div class="track"><div class="fill" style="width:54%"></div></div><em>21</em></div>
+          <div class="hbar"><span>Resourcers</span><div class="track"><div class="fill b2" style="width:46%"></div></div><em>18</em></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>How often</h3>
+        <p class="sub">Profiles created</p>
+        <div class="hbars">
+          <div class="hbar"><span>Multiple a day</span><div class="track"><div class="fill" style="width:51%"></div></div><em>20</em></div>
+          <div class="hbar"><span>Once a day</span><div class="track"><div class="fill b2" style="width:8%"></div></div><em>3</em></div>
+          <div class="hbar"><span>Several a week</span><div class="track"><div class="fill b2" style="width:31%"></div></div><em>12</em></div>
+          <div class="hbar"><span>Weekly or less</span><div class="track"><div class="fill b2" style="width:10%"></div></div><em>4</em></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Output format</h3>
+        <p class="sub">Downloaded from Present</p>
+        <div class="hbars">
+          <div class="hbar"><span>PDF only</span><div class="track"><div class="fill" style="width:64%"></div></div><em>25</em></div>
+          <div class="hbar"><span>Both</span><div class="track"><div class="fill b2" style="width:28%"></div></div><em>11</em></div>
+          <div class="hbar"><span>Word only</span><div class="track"><div class="fill b2" style="width:8%"></div></div><em>3</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>How profiles are really made</h2>
+    <p class="lede">Fewer than half finish a profile in Present alone. The rest move content through other tools to get it client-ready.</p>
+    <div class="card mt">
+      <div class="stack" role="img" aria-label="Present only 18, Present plus AI tools 10, Fuse template outside Present 7, Present plus Word or PDF converter 4">
+        <div style="width:46%;background:#151A36">18</div>
+        <div style="width:26%;background:#009CDD">10</div>
+        <div style="width:18%;background:#5FAFD0">7</div>
+        <div style="width:10%;background:#A2C8D8;color:#151A36">4</div>
+      </div>
+      <div class="key">
+        <span><i style="background:#151A36"></i>Present only</span>
+        <span><i style="background:#009CDD"></i>Present plus ChatGPT or other AI</span>
+        <span><i style="background:#5FAFD0"></i>Fuse template outside Present, at least sometimes</span>
+        <span><i style="background:#A2C8D8"></i>Present plus Word or iLovePDF</span>
+      </div>
+    </div>
+    <div class="grid g2 mt">
+      <div class="card">
+        <h3>Overall rating</h3>
+        <p class="sub">Out of 5</p>
+        <div class="cols">
+          <div class="col"><span class="v">0</span><div class="b" style="height:2%"></div></div>
+          <div class="col"><span class="v">3</span><div class="b" style="height:14%"></div></div>
+          <div class="col"><span class="v">11</span><div class="b" style="height:52%"></div></div>
+          <div class="col"><span class="v">21</span><div class="b hi" style="height:100%"></div></div>
+          <div class="col"><span class="v">4</span><div class="b" style="height:19%"></div></div>
+        </div>
+        <div class="col-labels"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+      </div>
+      <div class="card">
+        <h3>Efficiency</h3>
+        <p class="sub">Compared with the old process</p>
+        <div class="hbars">
+          <div class="hbar"><span>Very efficient</span><div class="track"><div class="fill" style="width:26%"></div></div><em>6</em></div>
+          <div class="hbar"><span>Efficient</span><div class="track"><div class="fill" style="width:100%"></div></div><em>23</em></div>
+          <div class="hbar"><span>No change</span><div class="track"><div class="fill b2" style="width:22%"></div></div><em>5</em></div>
+          <div class="hbar"><span>Inefficient</span><div class="track"><div class="fill b2" style="width:9%"></div></div><em>2</em></div>
+          <div class="hbar"><span>Very inefficient</span><div class="track"><div class="fill b2" style="width:13%"></div></div><em>3</em></div>
+        </div>
+        <p class="note">All three "very inefficient" responses came from people who rated Present 4 or 5 and described it positively, which suggests the scale was misread.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Resourcers carry the editing load</h2>
+    <p class="lede">A third of resourcers spend more than 10 minutes per profile. Only one consultant does.</p>
+    <div class="card mt">
+      <div class="split">
+        <div class="row"><span>Consultants+</span>
+          <div class="stack" role="img" aria-label="Consultants: 10 under 5 minutes, 10 at 5 to 10 minutes, 1 over 10 minutes">
+            <div style="width:48%;background:#151A36">10</div><div style="width:47%;background:#A2C8D8;color:#151A36">10</div><div style="width:5%;background:#009CDD">1</div>
+          </div></div>
+        <div class="row"><span>Resourcers</span>
+          <div class="stack" role="img" aria-label="Resourcers: 5 under 5 minutes, 7 at 5 to 10 minutes, 6 over 10 minutes">
+            <div style="width:28%;background:#151A36">5</div><div style="width:39%;background:#A2C8D8;color:#151A36">7</div><div style="width:33%;background:#009CDD">6</div>
+          </div></div>
+      </div>
+      <div class="key" style="margin-top:16px">
+        <span><i style="background:#151A36"></i>Under 5 minutes</span>
+        <span><i style="background:#A2C8D8"></i>5 to 10 minutes</span>
+        <span><i style="background:#009CDD"></i>Over 10 minutes</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Where the problems are</h2>
+    <p class="lede">Five themes account for almost all of the feedback. Counts show how many respondents raised each one.</p>
+    <div class="themes mt">
+      <div class="theme">
+        <div class="n">24<small>mentions</small></div>
+        <div><h3>Missing or incorrect information</h3><p>Top table not populated from screening notes, old CV used, dates misplaced, irrelevant tickets, CVs with tables not parsing.</p></div>
+        <blockquote>I have to also copy and paste the most current CV in, as usually it takes the old one.</blockquote>
+      </div>
+      <div class="theme">
+        <div class="n">19<small>mentions</small></div>
+        <div><h3>Formatting shifts on download</h3><p>Font sizes, spacing, margins, header borders and bullets change between preview and file. Word export is largely avoided.</p></div>
+        <blockquote>The preview will look perfect, then I save and download it.</blockquote>
+      </div>
+      <div class="theme">
+        <div class="n">15<small>mentions</small></div>
+        <div><h3>Generic content</h3><p>Summaries draw on the CV, not screening notes. Not tailored to the role. Enhance is unpredictable.</p></div>
+        <blockquote>I've had a few clients say the profiles are clearly AI generated.</blockquote>
+      </div>
+      <div class="theme">
+        <div class="n">10<small>mentions</small></div>
+        <div><h3>No editing once saved</h3><p>Small changes mean regenerating the whole profile. Undo resets all edits. Files renamed by hand every time.</p></div>
+        <blockquote>If you Ctrl+Z it takes you right back to the beginning.</blockquote>
+      </div>
+      <div class="theme">
+        <div class="n">9<small>mentions</small></div>
+        <div><h3>Reliability and loading</h3><p>Clearing cache and logging back into Bullhorn to get Present to load. Slow generation and broken templates.</p></div>
+        <blockquote>Half the time I have to exit out and clear cache.</blockquote>
+      </div>
+    </div>
+
+    <h3 style="margin-top:48px">A divided view on rewriting CVs</h3>
+    <div class="divided" style="margin-top:16px">
+      <div class="card"><span class="tag">Most of the team</span><p>Want Present to write stronger, more tailored content from screening notes and the job brief.</p></div>
+      <div class="card"><span class="tag">A smaller group, plus clients such as AdvanCell</span><p>Want the candidate's own CV kept as is, with Fuse branding added and contact details removed.</p></div>
+    </div>
+    <p class="note">Both needs are valid. Offering two distinct templates resolves the tension.</p>
+  </div>
+</section>
+
+<section id="outside">
+  <div class="wrap">
+    <h2>Working outside Present</h2>
+    <p class="lede">More than half the team leave Present at some point to finish a profile. Most do it to improve the content. Others do it to rescue the formatting.</p>
+
+    <div class="grid g3 mt">
+      <div class="card ratio"><h3>21 of 39</h3><p class="sub">use at least one external AI tool</p><div class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="card ratio"><h3>14 of 18</h3><p class="sub">resourcers use external AI tools</p><div class="meter"><div style="width:78%"></div></div><p class="sub" style="margin:10px 0 0">78%</p></div>
+      <div class="card ratio"><h3>7 of 21</h3><p class="sub">consultants use external AI tools</p><div class="meter"><div style="width:33%"></div></div><p class="sub" style="margin:10px 0 0">33%</p></div>
+    </div>
+
+    <div class="grid g2 mt">
+      <div class="card"><h3>Tools in use</h3><p class="sub">Respondents mentioning each tool. Blue shows external AI.</p>
+        <div class="hbars">
+          <div class="hbar wide"><span>ChatGPT</span><div class="track"><div class="fill" style="width:100%"></div></div><em>20</em></div>
+          <div class="hbar wide"><span>Microsoft Word</span><div class="track"><div class="fill b2" style="width:50%"></div></div><em>10</em></div>
+          <div class="hbar wide"><span>Blank Fuse template</span><div class="track"><div class="fill b2" style="width:35%"></div></div><em>7</em></div>
+          <div class="hbar wide"><span>Amplify chat or own prompts</span><div class="track"><div class="fill b2" style="width:30%"></div></div><em>6</em></div>
+          <div class="hbar wide"><span>Claude</span><div class="track"><div class="fill" style="width:15%"></div></div><em>3</em></div>
+          <div class="hbar wide"><span>iLovePDF or PDF converters</span><div class="track"><div class="fill b2" style="width:15%"></div></div><em>3</em></div>
+          <div class="hbar wide"><span>Adobe Acrobat</span><div class="track"><div class="fill b2" style="width:10%"></div></div><em>2</em></div>
+          <div class="hbar wide"><span>Copilot</span><div class="track"><div class="fill" style="width:5%"></div></div><em>1</em></div>
+          <div class="hbar wide"><span>Gemini</span><div class="track"><div class="fill" style="width:5%"></div></div><em>1</em></div>
+        </div></div>
+      <div class="card"><h3>What AI is used for</h3><p class="sub">Main task described by external AI users</p>
+        <div class="hbars">
+          <div class="hbar wide"><span>Tailoring summaries and strengths</span><div class="track"><div class="fill" style="width:100%"></div></div><em>8</em></div>
+          <div class="hbar wide"><span>Expanding work history points</span><div class="track"><div class="fill" style="width:75%"></div></div><em>6</em></div>
+          <div class="hbar wide"><span>Converting CVs into a template</span><div class="track"><div class="fill b2" style="width:50%"></div></div><em>4</em></div>
+          <div class="hbar wide"><span>Turning transcripts into summaries</span><div class="track"><div class="fill b2" style="width:38%"></div></div><em>3</em></div>
+          <div class="hbar wide"><span>Polishing wording</span><div class="track"><div class="fill b2" style="width:38%"></div></div><em>3</em></div>
+          <div class="hbar wide"><span>Fallback when Present is down</span><div class="track"><div class="fill b2" style="width:38%"></div></div><em>3</em></div>
+        </div>
+        <p class="note">Content work, not formatting, is the main reason people turn to AI.</p></div>
+    </div>
+
+    <h3 class="subhead">Why people leave Present</h3>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card why"><strong>9</strong><h3>Content is too generic</h3><p>Present draws on the CV, not screening notes or the job brief. ChatGPT gets both.</p></div>
+      <div class="card why"><strong>5</strong><h3>Downloads break formatting</h3><p>Word export is avoided. PDFs are converted back to Word through iLovePDF to edit.</p></div>
+      <div class="card why"><strong>4</strong><h3>Enhance doesn't follow instructions</h3><p>Requested changes are ignored or rewrite the whole section, so people go elsewhere.</p></div>
+      <div class="card why"><strong>3</strong><h3>Client formats</h3><p>AdvanCell and clients who want original CVs need templates Present doesn't offer.</p></div>
+      <div class="card why"><strong>3</strong><h3>Present is unavailable</h3><p>A ChatGPT prompt and a blank Fuse template are the standing fallback.</p></div>
+      <div class="card why"><strong>1</strong><h3>Personalised AI</h3><p>Two years of ChatGPT history means it already knows one consultant's preferences.</p></div>
+    </div>
+
+    <h3 class="subhead">Three common workarounds</h3>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card"><h3>The rewrite loop</h3><p class="sub">Most common, around 10 people</p>
+        <ol class="flow"><li class="">Generate in Present</li><li class="">Copy a section out</li><li class="ext">Rewrite in ChatGPT</li><li class="">Strip formatting</li><li class="pain">Paste back and refix</li></ol></div>
+      <div class="card"><h3>The format rescue</h3><p class="sub">3 people, including the 30+ minute response</p>
+        <ol class="flow"><li class="">Generate in Present</li><li class="">Download as PDF</li><li class="ext">Convert in iLovePDF</li><li class="pain">Fix spacing, fonts, bullets in Word</li><li class="">Send to client</li></ol></div>
+      <div class="card"><h3>The bypass</h3><p class="sub">Around 7 people, at least some of the time</p>
+        <ol class="flow"><li class="ext">Feed CV, notes and brief to ChatGPT</li><li class="">Output into a blank Fuse template</li><li class="pain">Use Present only for work history</li><li class="">Check and send</li></ol></div>
+    </div>
+
+    <h3 class="subhead">Going outside Present adds time</h3>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <div class="cmp"><span>Stay within Present or Amplify</span><div class="stack" role="img" aria-label="17 respondents: 8 under 5 minutes, 9 at 5 to 10 minutes, none over 10 minutes"><div style="width:47%;background:#151A36">8</div><div style="width:53%;background:#A2C8D8;color:#151A36">9</div></div></div>
+        <div class="cmp"><span>Also use external AI tools</span><div class="stack" role="img" aria-label="21 respondents: 7 under 5 minutes, 8 at 5 to 10 minutes, 6 over 10 minutes"><div style="width:33%;background:#151A36">7</div><div style="width:38%;background:#A2C8D8;color:#151A36">8</div><div style="width:29%;background:#009CDD">6</div></div></div>
+        <div class="key" style="margin-top:14px"><span><i style="background:#151A36"></i>Under 5 minutes</span><span><i style="background:#A2C8D8"></i>5 to 10 minutes</span><span><i style="background:#009CDD"></i>Over 10 minutes</span></div>
+      </div>
+      <div class="card"><h3>What this tells us</h3>
+        <p class="sub" style="margin-bottom:12px">No one who stays within Present takes more than 10 minutes. Every 10 to 20 minute response comes from someone using external AI, and the one 30+ minute response relies on a PDF converter.</p>
+        <p class="sub" style="margin:0">External tools are fixing gaps in Present, not replacing it. Each round trip adds copying, reformatting and checking. Closing the content and formatting gaps would bring most of this time back.</p>
+      </div>
+    </div>
+
+    <h3 class="subhead">Risks and opportunities</h3>
+    <div class="divided" style="margin-top:16px">
+      <div class="card"><span class="tag">Risks</span>
+        <ul class="plain">
+          <li>CVs, interview transcripts and salary details are going into personal AI accounts. Only one respondent mentioned removing names first.</li>
+          <li>Candidate profiles are uploaded to free PDF conversion websites.</li>
+          <li>Client-facing profiles vary in quality and style depending on who built them.</li>
+          <li>The best prompts sit in individual accounts, not with the team.</li>
+        </ul></div>
+      <div class="card"><span class="tag">Opportunities</span>
+        <ul class="plain">
+          <li>The team's prompts show exactly what a good profile looks like. They can shape Present's backend prompts.</li>
+          <li>Six people already use Amplify chat and their own prompts inside the Fuse ecosystem, a safer alternative worth scaling.</li>
+          <li>One approved tool and a shared prompt library would standardise output quickly.</li>
+        </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="voices" id="voices">
+  <div class="wrap">
+    <h2>In their words</h2>
+    <p class="lede">A selection of what the team said, grouped by theme. Quotes are anonymised and lightly edited for spelling.</p>
+    <div class="qfilter" aria-label="Filter quotes by theme"><button class="on" data-q="all">All</button><button data-q="pos">What's working</button><button data-q="fmt">Formatting</button><button data-q="data">Missing information</button><button data-q="content">Generic content</button><button data-q="edit">Editing</button><button data-q="rel">Reliability</button><button data-q="tools">Other tools</button><button data-q="cv">Keep the CV</button><button data-q="ideal">The ideal</button></div>
+    <div class="qgrid">
+      <figure class="q" data-t="pos"><span class="qt">What's working</span><blockquote>Nothing, I love it and it saves so much time.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="pos"><span class="qt">What's working</span><blockquote>The process is very fast, no dramas here.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="pos"><span class="qt">What's working</span><blockquote>None so far. I love the Amplify Present.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="pos"><span class="qt">What's working</span><blockquote>Honestly the speed of it is great, it's just editing that can slow everything down.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="pos"><span class="qt">What's working</span><blockquote>Amplify Present is a big help and cuts back time when creating the profile.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="fmt"><span class="qt">Formatting</span><blockquote>The profile may look correct while being edited in Present, but the formatting can change once it is downloaded.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="fmt"><span class="qt">Formatting</span><blockquote>The preview will look perfect, then I save and download it and the font for one dot point is massive.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="fmt"><span class="qt">Formatting</span><blockquote>I would say 50% of the time the formatting is skewed.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="fmt"><span class="qt">Formatting</span><blockquote>Fixing the spacing in one section can sometimes affect the formatting of other parts of the document.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="data"><span class="qt">Missing information</span><blockquote>9 times out of 10 I have to fix up the tickets section at the top of the profile.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="data"><span class="qt">Missing information</span><blockquote>For some reason it also always says my candidates are available as of April 2026.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="data"><span class="qt">Missing information</span><blockquote>It doesn't always generate the candidate's updated experience.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="data"><span class="qt">Missing information</span><blockquote>The part where preferences are discussed doesn't reflect exactly what the candidate and I spoke about on the call.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="data"><span class="qt">Missing information</span><blockquote>I have to also copy and paste the most current CV in, as usually it takes the old one.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="content"><span class="qt">Generic content</span><blockquote>I've had a few clients say the profiles are clearly AI generated and they want our opinions.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="content"><span class="qt">Generic content</span><blockquote>It summarises their whole experience rather than focusing on relevant roles.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="content"><span class="qt">Generic content</span><blockquote>I'm constantly fighting with the AI, whether it's not making the changes I'm requesting or messing up the formatting.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="content"><span class="qt">Generic content</span><blockquote>It's currently far too generic and even shows the headings for each dot point.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="content"><span class="qt">Generic content</span><blockquote>Present gives more generic summaries, so I prefer editing from a file I've already worked on.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="edit"><span class="qt">Editing</span><blockquote>If you Ctrl+Z it takes you right back to the beginning of the profile and you lose all the changes you made.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="edit"><span class="qt">Editing</span><blockquote>Having to generate a whole new profile to make one small change, like salary expectation.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="edit"><span class="qt">Editing</span><blockquote>Sometimes you don't notice errors until you've closed everything.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="edit"><span class="qt">Editing</span><blockquote>Having to rename the profile. If we defaulted it to something more widely accepted, very few would need to update it.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="rel"><span class="qt">Reliability</span><blockquote>Half the time I have to exit out and clear cache for the Amplify profile to work.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="rel"><span class="qt">Reliability</span><blockquote>Sometimes the loading takes longer than the editing.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="rel"><span class="qt">Reliability</span><blockquote>Waiting for the template to load, and if the template is broken, I need to redo it.</blockquote><figcaption>Resourcer</figcaption></figure>
+            <figure class="q" data-t="tools"><span class="qt">Other tools</span><blockquote>The content created in ChatGPT is far superior to anything Amplify creates, and significantly faster.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="tools"><span class="qt">Other tools</span><blockquote>After using it for 2+ years, there's a significant amount of knowledge it has of me and my preferences.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="tools"><span class="qt">Other tools</span><blockquote>I can feed my interview transcripts to it to create more comprehensive and personalised summaries.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="tools"><span class="qt">Other tools</span><blockquote>Present doesn't always understand the feedback or improvements I'm trying to make, so I'll often use ChatGPT.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="tools"><span class="qt">Other tools</span><blockquote>I've found converting through iLovePDF works much better than downloading it directly as a Word file.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="tools"><span class="qt">Other tools</span><blockquote>I would go to ChatGPT and ask for a key summary on a few points without including crucial info such as names.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="tools"><span class="qt">Other tools</span><blockquote>I use ChatGPT sometimes as I find it more consistent than Amplify.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="cv"><span class="qt">Keep the CV</span><blockquote>Just take the CV and add it to a branded document. Leave it alone entirely.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="cv"><span class="qt">Keep the CV</span><blockquote>I miss the candidate's own CV. They all look the same now.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="cv"><span class="qt">Keep the CV</span><blockquote>They like to see the candidate's writing style, so I try not to make any changes to the content of the resume.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="ideal"><span class="qt">The ideal</span><blockquote>Click a button and not have to add information myself, do a quick review and send.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="ideal"><span class="qt">The ideal</span><blockquote>Pick the template you want, it brings in the most recent screened note, and there's a spot to add the job we're submitting to.</blockquote><figcaption>Consultant</figcaption></figure>
+      <figure class="q" data-t="ideal"><span class="qt">The ideal</span><blockquote>Generate the profile in Present, make any adjustments within the platform, save it and send it without external tools.</blockquote><figcaption>Resourcer</figcaption></figure>
+      <figure class="q" data-t="ideal"><span class="qt">The ideal</span><blockquote>I could spend more time reviewing the candidate's content and less time fixing formatting issues.</blockquote><figcaption>Resourcer</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What the team is asking for</h2>
+    <p class="lede">Requests raised in the open responses.</p>
+    <div class="chips mt">
+      <span>Tailor to a selected job</span><span>Use screening notes</span><span>Edit saved profiles</span><span>Word export that matches PDF</span><span>Branded CV template</span><span>AdvanCell template</span><span>Anonymous profiles</span><span>Default file name</span><span>Client name and role in header</span><span>Read cover letters and Seek answers</span><span>Run multiple profiles at once</span><span>Justify, spell check and capitalisation</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Source: internal Present feedback survey, 39 responses from consultants and resourcers.</span>
+    <span>Theme counts are based on a review of open responses and are indicative.</span>
+  </div>
+</footer>
+
+<script>
+
+// Quote filter
+const qb=document.querySelectorAll('.qfilter button');
+qb.forEach(b=>b.addEventListener('click',()=>{
+  qb.forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.q').forEach(q=>{q.hidden = b.dataset.q!=='all' && q.dataset.t!==b.dataset.q;});
+}));
+</script>
+</body>
+</html>
