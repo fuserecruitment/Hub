@@ -13,17 +13,18 @@ confidential content here.
 
 | Tool | Where it lives | Link |
 |---|---|---|
-| Bullhorn Categorisation | [fuserecruitment/bullhorn-category](https://github.com/fuserecruitment/bullhorn-category) | https://fuserecruitment.github.io/bullhorn-category/ |
-| Present Feedback Review | `present-feedback/` in this repo | https://fuserecruitment.github.io/hub/present-feedback/ |
+| Bullhorn Categorisation | `bullhorn-category/` (its AI proxy worker is in `bullhorn-category/worker/`) | https://fuserecruitment.github.io/hub/bullhorn-category/ |
+| Present Feedback Review | `present-feedback/` | https://fuserecruitment.github.io/hub/present-feedback/ |
+
+Bullhorn Categorisation used to live in its own repo,
+[fuserecruitment/bullhorn-category](https://github.com/fuserecruitment/bullhorn-category).
+It was moved here with its history, and the old address now redirects here.
 
 ## Adding a tool
 
-1. Put the tool in its own folder here, or in its own repo under the
-   `fuserecruitment` org (GitHub Pages keeps it on the same domain, which the
-   shared sign-in relies on).
+1. Put the tool in its own folder in this repo.
 2. Add an entry to the `TOOLS` list near the top of the script in `index.html`.
    It shows up in the sidebar and as a card on the home page.
-3. In the tool's page, add the sign-in check to `<head>` and a
-   "Back to Fuse Hub" link. Copy both from `present-feedback/index.html`
-   (use `https://fuserecruitment.github.io/hub/` as the hub URL if the
-   tool lives in a different repo).
+3. In the tool's page, add the sign-in check to `<head>` and the shared
+   sidebar with a "Back to Fuse Hub" link. Copy both from
+   `present-feedback/index.html`.

@@ -56,9 +56,6 @@ section.alt{background:var(--soft)}
 .topbar{background:var(--hero-bg);color:var(--hero-ink)}
 .topbar .wrap{display:flex;justify-content:space-between;align-items:center;padding-top:18px;padding-bottom:18px;font-size:14px}
 .topbar .meta{opacity:.75}
-.topbar .hub-link{color:inherit;font-weight:600;text-decoration:none}
-.topbar .hub-link:hover{text-decoration:underline}
-.topbar .hub-sep{margin:0 10px;opacity:.5}
 .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.01em}
 .brand svg{width:26px;height:26px}
 
@@ -253,13 +250,72 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   .tabs button{flex:1;padding:10px 8px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- Shell: sidebar + page (same component as the other Fuse Hub tools) ---------- */
+.shell{display:flex;min-height:100vh}
+.page{flex:1;min-width:0}
+.sidebar{
+  width:300px;flex-shrink:0;background:#151A36;color:#fff;
+  display:flex;flex-direction:column;height:100vh;position:sticky;top:0;overflow:hidden;
+  font-size:15px;line-height:1.5;
+}
+.sidebar-scroll{flex:1;min-height:0;overflow-y:auto}
+.sidebar-brand{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1);text-align:center}
+.sidebar-logo{display:block;width:96px;height:auto;margin:0 auto 14px}
+.sidebar-brand h1{font-size:16.5px;font-weight:700;letter-spacing:-0.01em;line-height:1.5;margin:0;color:#fff}
+.sidebar-block{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-block label{
+  display:block;font-size:10.5px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.06em;color:rgba(255,255,255,.5);margin-bottom:8px;
+}
+.sidebar-nav-btn{
+  display:block;width:100%;text-align:left;padding:10px 12px;margin-bottom:4px;border-radius:7px;border:none;
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.8);font-family:'Work Sans',sans-serif;
+  font-size:13.5px;font-weight:600;cursor:pointer;text-decoration:none;
+}
+.sidebar-nav-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+.sidebar-nav-btn.active{background:#009CDD;color:#fff}
+.sidebar-nav-btn.hub-back{margin-bottom:0}
+@media (max-width:860px){
+  .shell{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:relative}
+  .sidebar-sections{display:none}
+}
 </style>
 </head>
 <body>
 
+<div class="shell">
+<aside class="sidebar">
+  <div class="sidebar-scroll">
+    <div class="sidebar-brand">
+      <img src="../fuse-logo.png" alt="Fuse" class="sidebar-logo">
+      <h1>Present Feedback Review</h1>
+    </div>
+
+    <div class="sidebar-block">
+      <a class="sidebar-nav-btn hub-back" href="../">&larr; Back to Fuse Hub</a>
+    </div>
+
+    <div class="sidebar-block sidebar-sections">
+      <label>Sections</label>
+      <nav id="sectionNav">
+        <a class="sidebar-nav-btn" href="#responded">Who responded</a>
+        <a class="sidebar-nav-btn" href="#profiles">How profiles are made</a>
+        <a class="sidebar-nav-btn" href="#editing">The editing load</a>
+        <a class="sidebar-nav-btn" href="#problems">Where the problems are</a>
+        <a class="sidebar-nav-btn" href="#outside">Working outside Present</a>
+        <a class="sidebar-nav-btn" href="#voices">In their words</a>
+        <a class="sidebar-nav-btn" href="#asks">What the team is asking for</a>
+      </nav>
+    </div>
+  </div>
+</aside>
+
+<div class="page">
 <div class="topbar">
   <div class="wrap">
-    <span class="meta"><a class="hub-link" href="../">&larr; Fuse Hub</a><span class="hub-sep">|</span>Internal review, September 2026</span>
+    <span class="meta">Internal review, September 2026</span>
     <span class="brand">Fuse Recruitment
     </span>
   </div>
@@ -284,7 +340,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 
 <main>
 
-<section>
+<section id="responded">
   <div class="wrap">
     <h2>Who responded</h2>
     <p class="lede">A high-frequency workflow. Most respondents build profiles every day.</p>
@@ -320,7 +376,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   </div>
 </section>
 
-<section class="alt">
+<section id="profiles" class="alt">
   <div class="wrap">
     <h2>How profiles are really made</h2>
     <p class="lede">Fewer than half finish a profile in Present alone. The rest move content through other tools to get it client-ready.</p>
@@ -367,7 +423,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   </div>
 </section>
 
-<section>
+<section id="editing">
   <div class="wrap">
     <h2>Resourcers carry the editing load</h2>
     <p class="lede">A third of resourcers spend more than 10 minutes per profile. Only one consultant does.</p>
@@ -391,7 +447,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   </div>
 </section>
 
-<section class="alt">
+<section id="problems" class="alt">
   <div class="wrap">
     <h2>Where the problems are</h2>
     <p class="lede">Five themes account for almost all of the feedback. Counts show how many respondents raised each one.</p>
@@ -570,7 +626,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   </div>
 </section>
 
-<section>
+<section id="asks">
   <div class="wrap">
     <h2>What the team is asking for</h2>
     <p class="lede">Requests raised in the open responses.</p>
@@ -588,8 +644,20 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
     <span>Theme counts are based on a review of open responses and are indicative.</span>
   </div>
 </footer>
+</div>
+</div>
 
 <script>
+
+// Sidebar: highlight the section currently on screen
+const navLinks=[...document.querySelectorAll('#sectionNav a')];
+const spy=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));
+  });
+},{rootMargin:'-40% 0px -55% 0px'});
+navLinks.forEach(a=>{const s=document.querySelector(a.getAttribute('href')); if(s) spy.observe(s);});
 
 // Quote filter
 const qb=document.querySelectorAll('.qfilter button');

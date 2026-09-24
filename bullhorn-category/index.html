@@ -5,14 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bullhorn Categorisation Journey</title>
 <script>
-/* Fuse Hub sign-in check: send people to the hub to enter their Fuse email first.
-   The hub stores it under the same key on the same fuserecruitment.github.io origin. */
-const FUSE_HUB_URL = 'https://fuserecruitment.github.io/hub/';
+/* Fuse Hub sign-in check: send people to the hub to enter their Fuse email first. */
 (function () {
   var email = null;
   try { email = localStorage.getItem('fuseHub.email'); } catch (e) { return; }
   if (!email || !/^[^\s@]+@fuserecruitment\.com$/i.test(email)) {
-    location.replace(FUSE_HUB_URL + '?next=' + encodeURIComponent(location.href));
+    location.replace('../?next=' + encodeURIComponent(location.href));
   }
 })();
 </script>
@@ -406,7 +404,7 @@ const FUSE_HUB_URL = 'https://fuserecruitment.github.io/hub/';
       </div>
 
       <div class="sidebar-block">
-        <a class="sidebar-nav-btn hub-back" href="https://fuserecruitment.github.io/hub/">&larr; Back to Fuse Hub</a>
+        <a class="sidebar-nav-btn hub-back" href="../">&larr; Back to Fuse Hub</a>
       </div>
 
       <div class="sidebar-block">
