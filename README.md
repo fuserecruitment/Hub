@@ -1,7 +1,7 @@
 # Fuse Hub
 
 The main menu for Fuse Recruitment's internal tools, hosted on GitHub Pages at
-https://fuserecruitment.github.io/FuseTech/
+https://fuserecruitment.github.io/hub/
 
 People enter their `@fuserecruitment.com` email the first time they open the
 hub (no password). It's saved in their browser, and each tool checks for it
@@ -14,7 +14,7 @@ confidential content here.
 | Tool | Where it lives | Link |
 |---|---|---|
 | Bullhorn Categorisation | [fuserecruitment/bullhorn-category](https://github.com/fuserecruitment/bullhorn-category) | https://fuserecruitment.github.io/bullhorn-category/ |
-| Present Feedback Review | `present-feedback/` in this repo | https://fuserecruitment.github.io/FuseTech/present-feedback/ |
+| Present Feedback Review | `present-feedback/` in this repo | https://fuserecruitment.github.io/hub/present-feedback/ |
 
 ## Adding a tool
 
@@ -25,5 +25,5 @@ confidential content here.
    It shows up in the sidebar and as a card on the home page.
 3. In the tool's page, add the sign-in check to `<head>` and a
    "Back to Fuse Hub" link. Copy both from `present-feedback/index.html`
-   (use `https://fuserecruitment.github.io/FuseTech/` as the hub URL if the
+   (use `https://fuserecruitment.github.io/hub/` as the hub URL if the
    tool lives in a different repo).
